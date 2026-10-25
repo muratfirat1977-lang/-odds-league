@@ -1,133 +1,143 @@
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Odds League</title>
+<title>Odds League – Testversion 2</title>
 <style>
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  background: #102a22;
-  color: white;
-  font-family: Arial, sans-serif;
-}
-main {
-  max-width: 650px;
-  margin: auto;
-  padding: 24px 16px;
-}
-h1 { color: #4ade80; text-align: center; }
-.subtitle { text-align: center; color: #b8c9c0; }
-.box {
-  background: #204638;
-  padding: 22px;
-  border-radius: 16px;
-  margin-top: 26px;
-}
-.small { color: #b8c9c0; font-size: 14px; }
-.teams { font-size: 21px; font-weight: bold; }
-.options { display: flex; gap: 8px; margin-top: 20px; }
-.option {
-  flex: 1;
-  background: #315849;
-  border: 2px solid transparent;
-  border-radius: 12px;
-  color: white;
-  padding: 14px 5px;
-  cursor: pointer;
-}
-.option b { display: block; font-size: 25px; }
-.option span { display: block; font-size: 12px; margin: 8px 0; }
-.option strong { color: #4ade80; font-size: 21px; }
-.option.active { border-color: #4ade80; background: #174b32; }
-.save {
-  width: 100%;
-  background: #4ade80;
-  border: none;
-  border-radius: 12px;
-  padding: 16px;
-  margin-top: 22px;
-  font-size: 17px;
-  font-weight: bold;
-  cursor: pointer;
-}
-#meldung { line-height: 1.6; }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: #102a22; color: white; font-family: Arial, sans-serif; }
+  main { max-width: 780px; margin: auto; padding: 25px 16px 50px; }
+  h1 { color: #4ade80; text-align: center; margin-bottom: 5px; }
+  h2 { margin-top: 0; font-size: 21px; }
+  .sub { text-align: center; color: #bdd4c7; }
+  .note { color: #c5d5cb; font-size: 13px; line-height: 1.5; }
+  .panel, .match { background: #204638; border-radius: 16px; padding: 18px; margin-top: 16px; }
+  .counter { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .count { color: #4ade80; font-size: 24px; font-weight: bold; }
+  .progress { height: 9px; background: #315849; border-radius: 9px; overflow: hidden; margin: 12px 0; }
+  #bar { height: 100%; width: 0; background: #4ade80; transition: width .2s; }
+  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0; }
+  .filter { background: #315849; color: white; border: 1px solid #527363; border-radius: 10px; padding: 11px; cursor: pointer; }
+  .filter.active { background: #4ade80; color: #102a22; font-weight: bold; }
+  .meta { color: #bfd0c5; font-size: 13px; }
+  .teams { font-size: 19px; font-weight: bold; margin: 10px 0 16px; }
+  .choices { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .choice { background: #315849; color: white; border: 2px solid transparent; border-radius: 12px; padding: 12px 5px; cursor: pointer; }
+  .choice b { display: block; font-size: 23px; }
+  .choice small { display: block; margin: 5px 0; font-size: 11px; }
+  .choice strong { color: #4ade80; font-size: 18px; }
+  .choice.active { border-color: #4ade80; background: #174b32; }
+  .saved { color: #4ade80; font-size: 13px; margin-top: 12px; }
+  .entry { border-top: 1px solid #517463; padding: 12px 0; font-size: 14px; }
+  .remove { float: right; border: 0; background: transparent; color: #ffcccc; text-decoration: underline; cursor: pointer; }
+  .reset { background: #315849; border: 1px solid #668775; border-radius: 10px; color: white; padding: 11px 13px; cursor: pointer; }
+  #meldung { min-height: 22px; color: #4ade80; font-weight: bold; }
 </style>
 </head>
 <body>
 <main>
-<h1>⚽ ODDS LEAGUE</h1>
-<p class="subtitle">Deine private Fußball-Tippliga by elMurino</p>
-
-<div class="box">
-  <h2>Spielauswahl</h2>
-  <p class="small">🇩🇪 Bundesliga · Testspiel</p>
-  <p class="teams">Bayern München – Borussia Dortmund</p>
-  <p>Wer gewinnt? Wähle deinen Tipp:</p>
-
-  <div class="options">
-    <button class="option" data-tipp="1" onclick="waehlen('1')">
-      <b>1</b><span>Heimsieg</span><strong>2,10</strong>
-    </button>
-    <button class="option" data-tipp="X" onclick="waehlen('X')">
-      <b>X</b><span>Remis</span><strong>3,40</strong>
-    </button>
-    <button class="option" data-tipp="2" onclick="waehlen('2')">
-      <b>2</b><span>Auswärtssieg</span><strong>3,15</strong>
-    </button>
+  <h1>⚽ ODDS LEAGUE</h1>
+  <p class="sub">Deine private Fußball-Tippliga by @elmurino</p>
+  <div class="panel">
+    <div class="counter"><h2>Meine Wochentipps</h2><span class="count" id="zaehler">0 / 10</span></div>
+    <div class="progress"><div id="bar"></div></div>
+    <p class="note">Maximal 10 verschiedene Spiele. Ein vorhandener Tipp kann geändert oder durch erneutes Antippen entfernt werden.</p>
+    <p id="meldung" aria-live="polite"></p>
   </div>
 
-  <p class="small">Quoten sind nur Testwerte, nicht von Interwetten.</p>
-  <button class="save" onclick="speichern()">Tipp speichern</button>
-  <p id="meldung"></p>
-</div>
+  <h2 style="margin-top:26px">Spielauswahl</h2>
+  <p class="note">12 frei erfundene Testbegegnungen mit Beispielquoten. Keine echten Spielpläne oder Interwetten-Quoten.</p>
+  <div class="filters" id="filter"></div>
+  <div id="spiele"></div>
 
-<p class="small">Testversion – noch ohne Login, Spielplan und Jackpot.</p>
+  <div class="panel">
+    <h2>Meine gespeicherten Tipps</h2>
+    <div id="meineTipps"></div>
+    <button class="reset" onclick="allesLoeschen()">Alle Testtipps löschen</button>
+  </div>
+  <p class="note">Testmodus: Die Tipps liegen nur in diesem Browser. Noch kein Login, keine echte Anstoßsperre, keine Ergebnisse und kein Jackpot.</p>
 </main>
-
 <script>
-const quoten = { "1": 2.10, "X": 3.40, "2": 3.15 };
-let auswahl = null;
-
-function waehlen(tipp) {
-  auswahl = tipp;
-  document.querySelectorAll(".option").forEach(button => {
-    button.classList.toggle("active", button.dataset.tipp === tipp);
-  });
-}
-
-function speichern() {
-  const meldung = document.getElementById("meldung");
-  if (!auswahl) {
-    meldung.textContent = "Bitte zuerst 1, X oder 2 wählen.";
-    return;
-  }
-  const daten = {
-    spiel: "Bayern München – Borussia Dortmund",
-    tipp: auswahl,
-    quote: quoten[auswahl],
-    zeitpunkt: new Date().toISOString()
-  };
-  localStorage.setItem("odds-league-testtipp", JSON.stringify(daten));
-  meldung.textContent = "✅ Tipp " + auswahl + " gespeichert! Quote: " +
-    quoten[auswahl].toFixed(2).replace(".", ",");
-}
-
-const vorher = localStorage.getItem("odds-league-testtipp");
-if (vorher) {
-  try {
-    const daten = JSON.parse(vorher);
-    if (quoten[daten.tipp]) {
-      waehlen(daten.tipp);
-      document.getElementById("meldung").textContent =
-        "Zuletzt gespeicherter Tipp: " + daten.tipp;
+const ligen = {
+  alle: "Alle Ligen", de: "🇩🇪 Bundesliga", en: "🏴 Premier League",
+  es: "🇪🇸 La Liga", tr: "🇹🇷 Süper Lig"
+};
+const spiele = [
+  {id:"de1", l:"de", tag:"Fr", zeit:"20:30", heim:"Bayern München", gast:"Borussia Dortmund", q:[2.10,3.40,3.15]},
+  {id:"de2", l:"de", tag:"Sa", zeit:"15:30", heim:"Leverkusen", gast:"Frankfurt", q:[1.85,3.60,4.20]},
+  {id:"de3", l:"de", tag:"So", zeit:"17:30", heim:"Stuttgart", gast:"Freiburg", q:[2.05,3.25,3.70]},
+  {id:"en1", l:"en", tag:"Sa", zeit:"13:30", heim:"Arsenal", gast:"Chelsea", q:[1.95,3.50,3.80]},
+  {id:"en2", l:"en", tag:"Sa", zeit:"18:30", heim:"Liverpool", gast:"Newcastle", q:[1.75,3.85,4.40]},
+  {id:"en3", l:"en", tag:"Mo", zeit:"21:00", heim:"Manchester City", gast:"Tottenham", q:[1.65,4.10,4.70]},
+  {id:"es1", l:"es", tag:"Sa", zeit:"21:00", heim:"Real Madrid", gast:"Sevilla", q:[1.45,4.40,6.80]},
+  {id:"es2", l:"es", tag:"So", zeit:"16:15", heim:"Barcelona", gast:"Villarreal", q:[1.60,4.00,5.20]},
+  {id:"es3", l:"es", tag:"Mo", zeit:"21:00", heim:"Betis", gast:"Valencia", q:[2.15,3.10,3.55]},
+  {id:"tr1", l:"tr", tag:"Fr", zeit:"19:00", heim:"Galatasaray", gast:"Trabzonspor", q:[1.70,3.70,4.60]},
+  {id:"tr2", l:"tr", tag:"So", zeit:"18:00", heim:"Fenerbahçe", gast:"Beşiktaş", q:[2.00,3.45,3.65]},
+  {id:"tr3", l:"tr", tag:"Mo", zeit:"19:00", heim:"Başakşehir", gast:"Kasımpaşa", q:[1.90,3.55,3.95]}
+];
+const key = "odds-league-demo-v2";
+const zeichen = ["1", "X", "2"];
+let filterAktiv = "alle";
+let tipps = {};
+try {
+  const alt = JSON.parse(localStorage.getItem(key) || "{}");
+  if (alt && typeof alt === "object" && !Array.isArray(alt)) {
+    for (const spiel of spiele) {
+      if (zeichen.includes(alt[spiel.id])) tipps[spiel.id] = alt[spiel.id];
     }
-  } catch (e) {
-    console.log("Kein gültiger Testtipp vorhanden.");
   }
+} catch (e) { tipps = {}; }
+function quote(wert) { return wert.toFixed(2).replace(".", ","); }
+function sichern() {
+  try { localStorage.setItem(key, JSON.stringify(tipps)); }
+  catch (e) { document.getElementById("meldung").textContent = "Speichern im Browser nicht möglich."; }
 }
+function ligaWaehlen(liga) { filterAktiv = liga; anzeigen(); }
+function tippWaehlen(id, wahl) {
+  if (tipps[id] === wahl) {
+    delete tipps[id];
+    document.getElementById("meldung").textContent = "Tipp entfernt.";
+  } else if (!tipps[id] && Object.keys(tipps).length >= 10) {
+    document.getElementById("meldung").textContent = "Maximal 10 Tipps! Entferne zuerst einen Tipp.";
+    return;
+  } else {
+    tipps[id] = wahl;
+    document.getElementById("meldung").textContent = "Tipp " + wahl + " gespeichert.";
+  }
+  sichern(); anzeigen();
+}
+function allesLoeschen() {
+  if (!confirm("Wirklich alle 12 Testspiele von deinen Tipps befreien?")) return;
+  tipps = {};
+  sichern(); anzeigen();
+  document.getElementById("meldung").textContent = "Alle Testtipps gelöscht.";
+}
+function anzeigen() {
+  const anzahl = Object.keys(tipps).length;
+  document.getElementById("zaehler").textContent = anzahl + " / 10";
+  document.getElementById("bar").style.width = (anzahl * 10) + "%";
+  document.getElementById("filter").innerHTML = Object.entries(ligen).map(([id, name]) =>
+    `<button class="filter ${filterAktiv === id ? "active" : ""}" onclick="ligaWaehlen('${id}')">${name}</button>`
+  ).join("");
+  document.getElementById("spiele").innerHTML = spiele.filter(s => filterAktiv === "alle" || s.l === filterAktiv).map(s => {
+    const gewaehlt = tipps[s.id];
+    const auswahl = zeichen.map((z, i) => `<button class="choice ${gewaehlt === z ? "active" : ""}"
+      onclick="tippWaehlen('${s.id}','${z}')"><b>${z}</b><small>${["Heimsieg","Remis","Auswärtssieg"][i]}</small><strong>${quote(s.q[i])}</strong></button>`).join("");
+    return `<div class="match"><div class="meta">${ligen[s.l]} · ${s.tag} ${s.zeit} Uhr (Demo)</div>
+      <div class="teams">${s.heim} – ${s.gast}</div><div class="choices">${auswahl}</div>
+      ${gewaehlt ? `<div class="saved">✓ Gespeichert: ${gewaehlt} · Quote ${quote(s.q[zeichen.indexOf(gewaehlt)])}</div>` : ""}</div>`;
+  }).join("");
+  const gewaehlt = spiele.filter(s => tipps[s.id]);
+  document.getElementById("meineTipps").innerHTML = gewaehlt.length ? gewaehlt.map(s => {
+    const wahl = tipps[s.id];
+    const punkte = (s.q[zeichen.indexOf(wahl)] * 10).toLocaleString("de-DE", {maximumFractionDigits:2});
+    return `<div class="entry"><button class="remove" onclick="tippWaehlen('${s.id}','${wahl}')">Entfernen</button>
+      <strong>${s.heim} – ${s.gast}</strong><br>${wahl} · Quote ${quote(s.q[zeichen.indexOf(wahl)])} · ${punkte} Punkte bei richtigem Tipp</div>`;
+  }).join("") : `<p class="note">Noch keine Tipps ausgewählt.</p>`;
+}
+anzeigen();
 </script>
 </body>
 </html>
