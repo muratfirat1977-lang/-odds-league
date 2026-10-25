@@ -561,9 +561,14 @@ async function showDb(){
 function localLock(g){
   return !!g.result || !!(dbWeek && dbWeek.settled) || Date.now()>=new Date(g.kickoff).getTime()-300000;
 }
-async function loadDb(){
-  e('dbMessage').textContent='Daten werden aus Supabase gelesen …';
-  e('dbStats').innerHTML='';e('dbMatches').innerHTML='';
+async function loadDb({preserveScroll=false}={}){
+  // Beim Speichern die Liste nicht leeren: sonst wird die Seite kurz
+  // kleiner und der Browser springt nach oben.
+  if(!preserveScroll){
+    e('dbMessage').textContent='Daten werden aus Supabase gelesen …';
+    e('dbStats').innerHTML='';
+    e('dbMatches').innerHTML='';
+  }
   try {
     const {data:weeks,error:we}=await db.from('weeks').select('id,label,starts_at,ends_at,settled').order('starts_at',{ascending:false});
     if(we)throw we;
@@ -582,7 +587,9 @@ async function loadDb(){
     if(pickResult.error)throw pickResult.error;
     dbGames=gameResult.data||[];
     dbPicks=(pickResult.data||[]).filter(t=>dbGames.some(g=>g.id===t.game_id));
+    const previousY=preserveScroll ? window.scrollY : null;
     renderDb();
+    if(preserveScroll) window.scrollTo({top:previousY,behavior:'instant'});
   }catch(err){e('dbMessage').textContent='Datenbank konnte nicht gelesen werden: '+textError(err);}
 }
 function renderDb(){
@@ -605,7 +612,7 @@ async function sendPick(gameId,choice){
   try {
     const {error}=await db.rpc('save_my_tip',{p_game_id:gameId,p_choice:newChoice});
     if(error)throw error;
-    await loadDb();
+    await loadDb({preserveScroll:true});
   }catch(err){e('dbMessage').textContent='Tipp konnte nicht gespeichert werden: '+textError(err);}
 }
 async function startAuth(){
