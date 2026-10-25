@@ -850,7 +850,7 @@ function updateAdminCreditPreview(){
     ? 'z. B. Korrektur: 50 € statt 5 € gebucht'
     : 'z. B. Startguthaben oder Nachzahlung';
   e('adminCreditPreview').textContent=account&&valid
-    ? 'Kontostand '+esc(account.member_name)+': '+euroCents(account.balance_cents)
+    ? 'Kontostand '+account.member_name+': '+euroCents(account.balance_cents)
       +' → '+euroCents(Number(account.balance_cents)+(mode==='correction'?-cents:cents))
       +' ('+(mode==='correction'?'Abzug ':'Gutschrift ')+euroCents(cents)+').'
     : 'Wähle einen Spieler und gib den Betrag ein. Korrekturen werden mit Minus gebucht.';
@@ -901,8 +901,9 @@ async function addAdminCredit(){
     e('adminCreditAmount').value='';e('adminCreditReason').value='';
     await loadAdminWallets();
     await loadWalletAndSettlement();
+    const updated=adminWalletAccounts.find(a=>a.member_id===account.member_id);
     e('adminCreditMessage').textContent='✅ '+(correcting?'Korrektur':'Aufladung')+' gespeichert: '+account.member_name
-      +' · '+euroCents(delta)+' · Neuer Kontostand '+euroCents(newBalance)+'.';
+      +' · '+euroCents(delta)+' · Neuer Kontostand '+(updated?euroCents(updated.balance_cents):'bitte Konten aktualisieren')+'.';
   }catch(err){
     e('adminCreditMessage').textContent='Buchung fehlgeschlagen: '+textError(err);
   }finally{btn.disabled=false;updateAdminCreditPreview();}
