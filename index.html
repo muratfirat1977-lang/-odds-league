@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#102a22">
-<title>Odds League V5 · elmurino</title>
+<title>Odds League V5.3 · elmurino</title>
 <style>
 :root { color-scheme: dark; --bg:#102a22; --panel:#204638; --button:#315849; --accent:#b9ff86; --green:#4ade80; --line:#50745f; --muted:#d0ded2; }
 * { box-sizing:border-box; }
@@ -84,6 +84,10 @@ code { color:var(--accent); }
 .topbar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; }
 .info-box { border:1px solid #628975; background:#13362a; border-radius:12px; padding:12px; margin:12px 0; }
 .live-banner { font-size:14px; color:#c9f4d0; }
+.standing-tools { display:grid; grid-template-columns:1fr 1fr; gap:12px; align-items:end; }
+.standing-tools select { width:100%; }
+@media(max-width:600px){.standing-tools{grid-template-columns:1fr}}
+
 [hidden] { display:none!important; }
 
 @media(max-width:580px) {
@@ -104,7 +108,7 @@ code { color:var(--accent); }
 <header class="brand">
 <img class="brand-logo" src="data:image/webp;base64,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" alt="Original elmurino-Logo">
 <h1>⚽ ODDS LEAGUE</h1>
-<p class="sub">Deine private Fußball-Tippliga · Version 5.2</p>
+<p class="sub">Deine private Fußball-Tippliga · Version 5.3</p>
 <span class="brand-by">POWERED BY ELMURINO</span>
 </header>
 <div id="demoRoot" hidden>
@@ -174,6 +178,32 @@ code { color:var(--accent); }
  <div class="panel"><h2>⚽ Echte Anmeldung · Test-Spielplan aus Supabase</h2>
   <p id="dbMessage" class="note" role="status">Spielwochen werden geladen …</p>
   <div id="dbStats" class="stats"></div></div>
+ <section class="panel" id="liveStandingSection" aria-label="Rangliste">
+  <h2>🏆 Rangliste &amp; Spieler</h2>
+  <p class="note">Die Spielernamen stammen aus Supabase. Richtige Tipps zählen mit der gespeicherten Quote × 10. Tippauswahlen anderer Spieler bleiben privat.</p>
+  <div class="standing-tools">
+   <div><label for="liveStandingSelect">Spieler ansehen</label><select id="liveStandingSelect"><option value="">Wird geladen …</option></select></div>
+   <p id="liveStandingPlayer" class="note" role="status"></p>
+  </div>
+  <p id="liveStandingJackpot" class="note"></p>
+  <p id="liveStandingMessage" class="note" role="status"></p>
+  <div class="scroll"><table><thead><tr><th>Platz</th><th>Spieler</th><th>Tipps</th><th>Richtig</th><th>Punkte</th></tr></thead><tbody id="liveStandingRows"></tbody></table></div>
+  <button id="liveStandingReload" type="button" class="btn secondary space">🔄 Rangliste aktualisieren</button>
+  <p class="note">Vorläufige Wertung. Die Auszahlung des virtuellen Jackpots folgt mit der Wochenabrechnung.</p>
+ </section>
+ <section class="panel" id="liveAdminResults" hidden>
+  <details id="liveResultsDetails">
+   <summary style="cursor:pointer;font-weight:bold;font-size:20px">⚙️ Ergebnisse (nur Administrator)</summary>
+   <p class="note">Ergebnisse bewerten die Tipps und sperren das betreffende Spiel. Jede Änderung wird protokolliert. Vor Anpfiff nur in ausdrücklich als TEST gekennzeichneten Wochen möglich.</p>
+   <label for="liveResultGame">Begegnung</label><select id="liveResultGame" style="width:100%"></select>
+   <label for="liveResultValue">Spielausgang</label><select id="liveResultValue" style="width:100%"><option value="">Noch offen</option><option value="1">1 – Heimsieg</option><option value="X">X – Remis</option><option value="2">2 – Auswärtssieg</option></select>
+   <label for="liveResultReason">Begründung</label><input id="liveResultReason" maxlength="250" placeholder="z. B. Offizielles Endergebnis eingetragen">
+   <button class="btn space" id="liveResultSave" type="button">Ergebnis speichern</button>
+   <p class="note" id="liveResultMessage" role="status"></p>
+   <h3 class="space">Änderungsprotokoll</h3>
+   <div class="scroll"><table><thead><tr><th>Wann</th><th>Spiel</th><th>Alt → Neu</th><th>Grund</th></tr></thead><tbody id="liveResultHistory"></tbody></table></div>
+  </details>
+ </section>
  <div id="dbMatches"></div>
 </section>
 </main>
@@ -453,6 +483,8 @@ let dbWeek = null;
 let dbGames = [];
 let dbPicks = [];
 let adminMemberWeek = null;
+let liveStandings = [];
+let selectedStandingId = null;
 const e = id => document.getElementById(id);
 const formatDate = iso => new Date(iso).toLocaleString('de-DE',{dateStyle:'short',timeStyle:'short',timeZone:'Europe/Berlin'});
 const textError = err => err && err.message ? err.message : 'Verbindung fehlgeschlagen.';
@@ -496,6 +528,7 @@ function showMembership(){
   const role=currentProfile.role==='admin'?'Administrator':'Mitglied';
   e('memberGreeting').textContent=currentProfile.display_name+' · '+role;
   display('memberAdminSection',currentProfile.role==='admin');
+  display('liveAdminResults',currentProfile.role==='admin');
 }
 async function checkLogin(){
   if(recoveryActive)return;
@@ -612,19 +645,22 @@ async function loadDb({preserveScroll=false}={}){
     dbPicks=(pickResult.data||[]).filter(t=>dbGames.some(g=>g.id===t.game_id));
     const previousY=preserveScroll ? window.scrollY : null;
     renderDb();
+    await loadLiveStandings();
+    if(currentProfile.role==='admin')await loadResultHistory();
     if(preserveScroll) window.scrollTo({top:previousY,behavior:'instant'});
   }catch(err){e('dbMessage').textContent='Datenbank konnte nicht gelesen werden: '+textError(err);}
 }
 function renderDb(){
   e('dbMessage').textContent=dbWeek.label+' · '+formatDate(dbWeek.starts_at)+' bis '+formatDate(dbWeek.ends_at)+' · TESTDATEN, falls von uns manuell angelegt. Keine Interwetten-Livequoten.';
   e('dbStats').innerHTML=`<div class="stat"><small>Meine gespeicherten Tipps</small><div class="number">${dbPicks.length} / 10</div><small>Auf dem Server gespeichert</small></div><div class="stat"><small>Begegnungen</small><div class="number">${dbGames.length}</div><small>Aus der Datenbank</small></div><div class="stat"><small>Spielwoche</small><div class="number">${dbWeek.settled?'Abgerechnet':'Offen'}</div><small>5 € je Teilnehmer · virtuell</small></div>`;
+  fillResultGames();
   if(!dbGames.length){e('dbMatches').innerHTML='<div class="panel">Noch keine Partien für diese Spielwoche vorhanden.</div>';return;}
   e('dbMatches').innerHTML=dbGames.map(g=>{
     const existing=dbPicks.find(t=>t.game_id===g.id);
     const locked=localLock(g);
     const options=[['1',g.quote_1,'Heimsieg'],['X',g.quote_x,'Remis'],['2',g.quote_2,'Auswärtssieg']].map(([c,q,label])=>
       `<button class="choice ${existing&&existing.choice===c?'active':''}" data-choice="${c}" ${locked?'disabled':''} onclick="sendPick(${g.id},'${c}')"><b>${c}</b><small>${label}</small><strong>${Number(q).toFixed(2).replace('.',',')}</strong></button>`).join('');
-    return `<article class="match" data-game-id="${g.id}"><div class="meta">${esc(ligen[g.league]||g.league)} · ${formatDate(g.kickoff)} ${locked?'· Gesperrt':''}</div><div class="teams">${esc(g.home_team)} – ${esc(g.away_team)}</div><div class="choices">${options}</div><p class="saved">${existing?'Gespeichert: '+existing.choice+' · Quote '+Number(existing.locked_quote).toFixed(2).replace('.',',')+' · Tipp durch erneutes Antippen entfernen':''}</p></article>`;
+    return `<article class="match" data-game-id="${g.id}"><div class="meta">${esc(ligen[g.league]||g.league)} · ${formatDate(g.kickoff)} ${g.result?'· Ergebnis '+esc(g.result):locked?'· Gesperrt':''}</div><div class="teams">${esc(g.home_team)} – ${esc(g.away_team)}</div><div class="choices">${options}</div><p class="saved">${existing?'Gespeichert: '+existing.choice+' · Quote '+Number(existing.locked_quote).toFixed(2).replace('.',',')+' · Tipp durch erneutes Antippen entfernen':''}</p></article>`;
   }).join('');
 }
 // Ein einzelner Tipp verändert nur die betroffene Karte. Wir ersetzen niemals
@@ -664,12 +700,87 @@ async function sendPick(gameId,choice){
     dbPicks=dbPicks.filter(t=>t.game_id!==gameId);
     if(stored)dbPicks.push(stored);
     refreshSinglePick(gameId);
+    await loadLiveStandings();
   }catch(err){
     e('dbMessage').textContent='Tipp konnte nicht gespeichert werden: '+textError(err);
   }finally{
     pendingPicks.delete(gameId);
   }
 }
+
+function standingPoints(n){return Number(n||0).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});}
+async function loadLiveStandings(){
+  if(!dbWeek||!currentProfile)return;
+  try{
+    const {data,error}=await db.rpc('odds_week_standings',{p_week_id:dbWeek.id});
+    if(error)throw error;
+    liveStandings=data||[];
+    if(!liveStandings.some(p=>p.member_id===selectedStandingId))
+      selectedStandingId=liveStandings.some(p=>p.member_id===currentUser.id)?currentUser.id:(liveStandings[0]&&liveStandings[0].member_id)||null;
+    const drop=e('liveStandingSelect');
+    drop.innerHTML=liveStandings.map(p=>'<option value="'+esc(p.member_id)+'">'+esc(p.member_name)+'</option>').join('')||'<option value="">Keine Spieler</option>';
+    drop.value=selectedStandingId||'';
+    e('liveStandingJackpot').textContent='Virtueller Jackpot: '+(liveStandings.length*5).toLocaleString('de-DE',{style:'currency',currency:'EUR'})+' · '+liveStandings.length+' Wochen-Teilnehmer × 5 €.';
+    let previous=null,rank=0;
+    e('liveStandingRows').innerHTML=liveStandings.map((p,i)=>{
+      const points=Number(p.total_points||0);
+      if(previous===null||previous!==points)rank=i+1;
+      previous=points;
+      return '<tr class="'+(p.member_id===currentUser.id?'self':'')+'"><td>'+rank+'.</td><td><strong>'+esc(p.member_name)+'</strong>'+(p.member_id===currentUser.id?' (du)':'')+'</td><td>'+Number(p.tip_count||0)+'</td><td>'+Number(p.correct_count||0)+'</td><td>'+standingPoints(points)+'</td></tr>';
+    }).join('')||'<tr><td colspan="5">Noch keine Teilnehmer.</td></tr>';
+    e('liveStandingMessage').textContent='Wertung aus Supabase geladen.';
+    selectStandingPlayer();
+  }catch(err){
+    e('liveStandingMessage').textContent='Neue Rangliste noch nicht freigeschaltet: Bitte zuerst sql/rangliste_ergebnisse_v5_3.sql im Supabase SQL Editor ausführen. '+textError(err);
+    e('liveStandingRows').innerHTML='<tr><td colspan="5">SQL-Einrichtung fehlt noch.</td></tr>';
+    e('liveStandingPlayer').textContent='';
+  }
+}
+function selectStandingPlayer(){
+  selectedStandingId=e('liveStandingSelect').value;
+  const p=liveStandings.find(x=>x.member_id===selectedStandingId);
+  if(!p){e('liveStandingPlayer').textContent='Noch keine Spieler.';return;}
+  const position=liveStandings.findIndex(x=>x.member_id===p.member_id);
+  const place=1+liveStandings.filter((x,i)=>i<position&&Number(x.total_points||0)>Number(p.total_points||0)).length;
+  e('liveStandingPlayer').textContent=p.member_name+' · Platz '+place+' · '+p.tip_count+'/10 Tipps · '+p.correct_count+' richtig · '+standingPoints(p.total_points)+' Punkte';
+}
+function fillResultGames(){
+  if(!currentProfile||currentProfile.role!=='admin')return;
+  const list=e('liveResultGame'),old=list.value;
+  list.innerHTML=dbGames.map(g=>'<option value="'+g.id+'">'+esc(g.home_team)+' – '+esc(g.away_team)+' · '+(g.result?'Ergebnis '+esc(g.result):'offen')+'</option>').join('');
+  if(dbGames.some(g=>String(g.id)===old))list.value=old;
+  setSelectedResult();
+  e('liveResultSave').disabled=!!dbWeek.settled||!dbGames.length;
+}
+function setSelectedResult(){
+  const g=dbGames.find(x=>String(x.id)===e('liveResultGame').value);
+  e('liveResultValue').value=g&&g.result?g.result:'';
+}
+async function loadResultHistory(){
+  if(!dbWeek||!currentProfile||currentProfile.role!=='admin')return;
+  const {data,error}=await db.rpc('odds_admin_result_history',{p_week_id:dbWeek.id});
+  if(error){e('liveResultMessage').textContent='Ergebnisverwaltung ist noch nicht eingerichtet: '+textError(error);return;}
+  e('liveResultHistory').innerHTML=(data||[]).map(h=>'<tr><td>'+formatDate(h.changed_at)+'</td><td>'+esc(h.match_label)+'</td><td>'+esc(h.old_result||'offen')+' → '+esc(h.new_result||'offen')+'</td><td>'+esc(h.reason)+'</td></tr>').join('')||'<tr><td colspan="4">Noch keine Änderungen.</td></tr>';
+}
+async function saveLiveResult(){
+  if(!currentProfile||currentProfile.role!=='admin'||!dbWeek)return;
+  const g=dbGames.find(x=>String(x.id)===e('liveResultGame').value);
+  if(!g)return;
+  const value=e('liveResultValue').value||null,reason=e('liveResultReason').value.trim();
+  if(reason.length<5||reason.length>250){e('liveResultMessage').textContent='Begründung mit 5 bis 250 Zeichen eingeben.';return;}
+  if((g.result||null)===value){e('liveResultMessage').textContent='Ergebnis ist unverändert.';return;}
+  if(!confirm('Ergebnis für '+g.home_team+' – '+g.away_team+' als '+(value||'offen')+' speichern? Die Wertung ändert sich sofort.'))return;
+  const button=e('liveResultSave');button.disabled=true;
+  try{
+    const {data,error}=await db.rpc('odds_admin_save_result',{p_game_id:g.id,p_result:value,p_reason:reason});
+    if(error)throw error;
+    await loadDb({preserveScroll:true});
+    e('liveResultReason').value='';
+    e('liveResultMessage').textContent='✅ '+(data||'Ergebnis gespeichert.');
+  }catch(err){e('liveResultMessage').textContent='Fehler: '+textError(err);}
+  finally{button.disabled=!!dbWeek.settled;}
+}
+
 async function loadAdminMembers(){
   if(!currentUser || !currentProfile || currentProfile.role!=='admin')return;
   const info=e('memberAdminMessage');
@@ -742,6 +853,10 @@ async function startAuth(){
     e('liveViewButton').addEventListener('click',showDb);
     e('demoViewButton').addEventListener('click',showDemo);
     e('refreshMembersButton').addEventListener('click',loadAdminMembers);
+    e('liveStandingSelect').addEventListener('change',selectStandingPlayer);
+    e('liveStandingReload').addEventListener('click',loadLiveStandings);
+    e('liveResultGame').addEventListener('change',setSelectedResult);
+    e('liveResultSave').addEventListener('click',saveLiveResult);
     e('memberAdminDetails').addEventListener('toggle',()=>{
       if(e('memberAdminDetails').open)loadAdminMembers();
     });
