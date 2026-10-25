@@ -114,7 +114,7 @@ begin
   if v_settled is distinct from false then
     raise exception 'Diese Spielwoche ist bereits abgerechnet.';
   end if;
-  if now() < v_kickoff and v_week_label not ilike '%TEST%' then
+  if now() < v_kickoff and v_week_label not ilike 'TESTWOCHE %' then
     raise exception 'Ergebnisse echter Spiele duerfen erst nach Anpfiff eingetragen werden.';
   end if;
   if v_old_result is not distinct from p_result then
