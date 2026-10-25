@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#102a22">
-<title>Odds League V5.4.1 · elmurino</title>
+<title>Odds League V5.5 · elmurino</title>
 <style>
 :root { color-scheme: dark; --bg:#102a22; --panel:#204638; --button:#315849; --accent:#b9ff86; --green:#4ade80; --line:#50745f; --muted:#d0ded2; }
 * { box-sizing:border-box; }
@@ -86,6 +86,11 @@ code { color:var(--accent); }
 .live-banner { font-size:14px; color:#c9f4d0; }
 .standing-tools { display:grid; grid-template-columns:1fr 1fr; gap:12px; align-items:end; }
 .standing-tools select { width:100%; }
+.admin-form-grid { display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px; }
+.admin-form-grid input,.admin-form-grid select { width:100%; }
+.wallet-warning {color:#f9ca9d; font-weight:600;}
+@media(max-width:680px){.admin-form-grid{grid-template-columns:1fr;}}
+
 .money { color:var(--accent); font-weight:bold; font-size:20px; }
 .week-summary { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:9px; }
 @media(max-width:600px){.week-summary { grid-template-columns:1fr 1fr; }}
@@ -112,7 +117,7 @@ code { color:var(--accent); }
 <header class="brand">
 <img class="brand-logo" src="data:image/webp;base64,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" alt="Original elmurino-Logo">
 <h1>⚽ ODDS LEAGUE</h1>
-<p class="sub">Deine private Fußball-Tippliga · Version 5.4.1</p>
+<p class="sub">Deine private Fußball-Tippliga · Version 5.5</p>
 <span class="brand-by">POWERED BY ELMURINO</span>
 </header>
 <div id="demoRoot" hidden>
@@ -174,12 +179,43 @@ code { color:var(--accent); }
   <p><a href="https://supabase.com/dashboard/project/yklolaydoifjucyzxdss/auth/users" target="_blank" rel="noopener noreferrer" style="color:var(--accent)">Supabase → Authentication → Users → Add user → Send invitation</a></p>
   <p class="note">Der Einladungslink führt zur Odds League. Neue Spieler setzen ihr Passwort selbst. Neue Konten bleiben zunächst gesperrt, bis du sie hier freischaltest.</p>
   <div class="flex space"><button class="btn secondary" id="refreshMembersButton" type="button">Mitglieder aktualisieren</button><span id="membersWeekLabel" class="pill">Spielwoche wird gesucht …</span></div>
+  <label for="adminWeekSelect">Mitglieder für Spielwoche freischalten</label>
+  <select id="adminWeekSelect" style="width:100%"><option value="">Spielwoche wird geladen …</option></select>
   <p id="memberAdminMessage" class="note" role="status"></p>
   <div id="adminMembersList"></div>
  </details>
+ <details id="walletAdminDetails" class="space">
+  <summary style="cursor:pointer;font-size:20px;font-weight:bold">💳 Guthaben verwalten (nur Administrator)</summary>
+  <p class="note">Hier legst du Startguthaben an und lädst Spieler später wieder auf. Jede Aufladung wird in Supabase protokolliert. Ohne 5 € verfügbares Guthaben ist der erste Tipp einer neuen Woche nicht möglich.</p>
+  <button class="btn secondary space" id="adminWalletRefreshButton" type="button">Konten aktualisieren</button>
+  <div class="admin-form-grid space">
+   <div><label for="adminCreditMember">Spieler</label><select id="adminCreditMember"></select></div>
+   <div><label for="adminCreditAmount">Gutschrift (€)</label><input id="adminCreditAmount" type="number" min="0.01" max="1000" step="0.01" placeholder="z. B. 20,00"></div>
+  </div>
+  <label for="adminCreditReason">Buchungsgrund</label><input id="adminCreditReason" type="text" maxlength="160" placeholder="z. B. Startguthaben oder Nachzahlung">
+  <button id="adminCreditSubmit" class="btn space" type="button">Guthaben verbindlich gutschreiben</button>
+  <p class="note" id="adminCreditMessage" role="status"></p>
+  <div id="adminWalletMembersList"></div>
+ </details>
+ <details id="adminNewWeekDetails" class="space">
+  <summary style="cursor:pointer;font-size:20px;font-weight:bold">📅 Neue Spielwoche erstellen (nur Administrator)</summary>
+  <p class="note">Spiele und Quoten werden manuell eingegeben. Kein Live-Import. Die alte Woche und die Gewinnkonten bleiben unverändert.</p>
+  <label for="adminNewWeekName">Name der Spielwoche</label>
+  <input id="adminNewWeekName" maxlength="80" placeholder="z. B. Spielwoche 2 oder TESTWOCHE 2 - DEMO">
+  <div class="admin-form-grid">
+   <div><label for="adminNewWeekStart">Beginn (deine lokale Zeit)</label><input id="adminNewWeekStart" type="datetime-local"></div>
+   <div><label for="adminNewWeekEnd">Ende (deine lokale Zeit)</label><input id="adminNewWeekEnd" type="datetime-local"></div>
+  </div>
+  <label for="adminNewWeekGames">Begegnungen – pro Zeile: Liga; Heimteam; Gastteam; Anpfiff; 1; X; 2</label>
+  <textarea id="adminNewWeekGames" rows="6" placeholder="tr; Galatasaray; Beşiktaş; 2026-11-06 19:00; 2,10; 3,30; 3,80"></textarea>
+  <p class="note">Ligen: <strong>de</strong>, <strong>en</strong>, <strong>es</strong>, <strong>tr</strong>. Datum: JJJJ-MM-TT HH:MM. Dezimalkomma und Dezimalpunkt sind erlaubt. 1–24 Spiele, maximal 10 Tipps pro Spieler.</p>
+  <button id="adminCreateWeekButton" class="btn" type="button">Spielwoche erstellen</button>
+  <p class="note" id="adminCreateWeekMessage" role="status"></p>
+ </details>
 </section>
 <section id="dbRoot" hidden>
- <div class="panel"><h2>⚽ Echte Anmeldung · Test-Spielplan aus Supabase</h2>
+ <div class="panel"><h2>⚽ Echte Anmeldung · Spielplan aus Supabase</h2>
+  <label for="liveWeekSelect">Spielwoche auswählen</label><select id="liveWeekSelect" style="width:100%"></select>
   <p id="dbMessage" class="note" role="status">Spielwochen werden geladen …</p>
   <div id="dbStats" class="stats"></div></div>
  <section class="panel" id="liveStandingSection" aria-label="Rangliste">
@@ -204,6 +240,10 @@ code { color:var(--accent); }
    <div class="stat"><small>Gesamte Gewinne</small><div class="number">–</div></div>
   </div>
   <p id="liveWalletMessage" class="note" role="status"></p>
+  <p id="livePrepaidMessage" class="note"></p>
+  <details id="liveWalletHistoryDetails" class="space"><summary style="cursor:pointer;font-weight:bold">📒 Buchungsverlauf anzeigen</summary>
+   <div class="scroll"><table><thead><tr><th>Datum</th><th>Buchung</th><th>Betrag</th><th>Grund / Woche</th></tr></thead><tbody id="liveWalletHistory"></tbody></table></div>
+  </details>
   <details class="space" id="livePayoutDetails">
    <summary style="cursor:pointer;font-size:17px;font-weight:bold">🏆 Endabrechnung dieser Woche</summary>
    <p class="note" id="livePayoutMessage">Für diese Woche liegt noch keine Endabrechnung vor.</p>
@@ -514,6 +554,10 @@ let liveStandings = [];
 let selectedStandingId = null;
 let walletFunctionsReady = false;
 let settlementSubmitting = false;
+let walletBalanceCents = null;
+let dbWeekOverrideId = null;
+let adminMemberWeekId = null;
+
 
 const e = id => document.getElementById(id);
 const formatDate = iso => new Date(iso).toLocaleString('de-DE',{dateStyle:'short',timeStyle:'short',timeZone:'Europe/Berlin'});
@@ -524,6 +568,7 @@ function showAuthForm(message=''){
   display('requestResetForm',false); display('passwordRecoveryForm',false);
   display('signedIn',false); display('dbRoot',false); display('demoRoot',false);
   display('memberAdminSection',false);
+  walletBalanceCents=null;
   e('authError').textContent=message;
 }
 function showResetRequest(){
@@ -665,7 +710,12 @@ async function loadDb({preserveScroll=false}={}){
       return;
     }
     const now=Date.now();
-    dbWeek=dbWeeks.find(w=>new Date(w.ends_at).getTime()>now)||dbWeeks[0];
+    dbWeek=dbWeeks.find(w=>String(w.id)===String(dbWeekOverrideId))
+      ||dbWeeks.find(w=>!w.settled&&new Date(w.ends_at).getTime()>now)
+      ||dbWeeks.find(w=>new Date(w.ends_at).getTime()>now)||dbWeeks[0];
+    dbWeekOverrideId=dbWeek.id;
+    e('liveWeekSelect').innerHTML=dbWeeks.map(w=>'<option value="'+w.id+'">'+esc(w.label)+(w.settled?' · abgerechnet':'')+'</option>').join('');
+    e('liveWeekSelect').value=String(dbWeek.id);
     const [gameResult,pickResult]=await Promise.all([
       db.from('games').select('id,league,home_team,away_team,kickoff,quote_1,quote_x,quote_2,result').eq('week_id',dbWeek.id).order('kickoff'),
       db.from('tips').select('game_id,choice,locked_quote').eq('user_id',currentUser.id)
@@ -686,6 +736,7 @@ function renderDb(){
   e('dbMessage').textContent=dbWeek.label+' · '+formatDate(dbWeek.starts_at)+' bis '+formatDate(dbWeek.ends_at)+' · TESTDATEN, falls von uns manuell angelegt. Keine Interwetten-Livequoten.';
   e('dbStats').innerHTML=`<div class="stat"><small>Meine gespeicherten Tipps</small><div class="number">${dbPicks.length} / 10</div><small>Auf dem Server gespeichert</small></div><div class="stat"><small>Begegnungen</small><div class="number">${dbGames.length}</div><small>Aus der Datenbank</small></div><div class="stat"><small>Spielwoche</small><div class="number">${dbWeek.settled?'Abgerechnet':'Offen'}</div><small>5 € ab dem ersten gespeicherten Tipp · virtuell</small></div>`;
   fillResultGames();
+  refreshAffordabilityUI();
   if(!dbGames.length){e('dbMatches').innerHTML='<div class="panel">Noch keine Partien für diese Spielwoche vorhanden.</div>';return;}
   e('dbMatches').innerHTML=dbGames.map(g=>{
     const existing=dbPicks.find(t=>t.game_id===g.id);
@@ -733,6 +784,7 @@ async function sendPick(gameId,choice){
     if(stored)dbPicks.push(stored);
     refreshSinglePick(gameId);
     await loadLiveStandings();
+    await loadWalletAndSettlement();
     updateSettlementAvailability();
   }catch(err){
     e('dbMessage').textContent='Tipp konnte nicht gespeichert werden: '+textError(err);
@@ -741,6 +793,103 @@ async function sendPick(gameId,choice){
   }
 }
 
+
+function refreshAffordabilityUI(){
+  if(!e('dbRoot')||e('dbRoot').hidden)return;
+  const blocked=dbPicks.length===0&&walletBalanceCents!==null&&walletBalanceCents<500;
+  e('dbMatches').querySelectorAll('.match').forEach(card=>{
+    const g=dbGames.find(x=>String(x.id)===card.dataset.gameId);
+    if(!g)return;
+    card.querySelectorAll('button.choice').forEach(button=>button.disabled=localLock(g)||blocked);
+  });
+  const info=e('livePrepaidMessage');
+  if(info)info.textContent=walletBalanceCents===null?'Guthaben wird geladen …':
+    blocked?'⛔ Kein Tipp möglich: mindestens 5,00 € Guthaben nötig. Bitte den Administrator um Aufladung bitten.':
+    dbPicks.length?'✅ Dein Wocheneinsatz ist mit dem ersten Tipp bezahlt. Bis zu 10 Tipps sind insgesamt ohne weitere Kosten möglich.':
+    '✅ Guthaben reicht für den ersten Tipp (5,00 €).';
+  if(info)info.className=blocked?'wallet-warning':'note';
+}
+async function loadAdminWallets(){
+  if(!currentProfile||currentProfile.role!=='admin')return;
+  e('adminCreditMessage').textContent='Konten werden geladen …';
+  try{
+    const {data,error}=await db.rpc('odds_admin_wallet_members');
+    if(error)throw error;
+    const accounts=data||[];
+    const drop=e('adminCreditMember'),old=drop.value;
+    drop.innerHTML=accounts.map(a=>'<option value="'+esc(a.member_id)+'">'+esc(a.member_name)+'</option>').join('');
+    if(accounts.some(a=>a.member_id===old))drop.value=old;
+    e('adminWalletMembersList').innerHTML='<div class="scroll"><table><thead><tr><th>Spieler</th><th>Guthaben</th><th>Zugriff</th></tr></thead><tbody>'+
+      accounts.map(a=>'<tr><td>'+esc(a.member_name)+'</td><td><strong>'+euroCents(a.balance_cents)+'</strong></td><td>'+(a.member_active?'Aktiv':'Gesperrt')+'</td></tr>').join('')+
+      '</tbody></table></div>';
+    e('adminCreditMessage').textContent=accounts.length+' Konten geladen.';
+  }catch(err){e('adminCreditMessage').textContent='Konten können erst nach Installation von sql/guthaben_und_neue_woche_v5_5.sql verwaltet werden: '+textError(err);}
+}
+async function addAdminCredit(){
+  if(!currentProfile||currentProfile.role!=='admin')return;
+  const target=e('adminCreditMember');
+  const amount=Number(e('adminCreditAmount').value);
+  const cents=Math.round(amount*100);
+  const reason=e('adminCreditReason').value.trim();
+  if(!target.value||!Number.isFinite(amount)||amount<=0||amount>1000
+      ||Math.abs(amount*100-cents)>0.00001||reason.length<3){
+    e('adminCreditMessage').textContent='Spieler wählen, gültigen Betrag (max. 1000 €, 2 Nachkommastellen) und Begründung angeben.';return;
+  }
+  if(!confirm('Wirklich '+euroCents(cents)+' virtuelles Guthaben für '+target.selectedOptions[0].textContent+' gutschreiben? Die Buchung wird protokolliert.'))return;
+  const btn=e('adminCreditSubmit');btn.disabled=true;
+  try{
+    const {data,error}=await db.rpc('odds_admin_add_credit',{p_member_id:target.value,p_amount_cents:cents,p_reason:reason});
+    if(error)throw error;
+    e('adminCreditAmount').value='';e('adminCreditReason').value='';
+    await loadAdminWallets();
+    await loadWalletAndSettlement();
+    e('adminCreditMessage').textContent='✅ '+data;
+  }catch(err){e('adminCreditMessage').textContent='Aufladen fehlgeschlagen: '+textError(err);}
+  finally{btn.disabled=false;}
+}
+function parseWeekGames(source){
+  const lines=source.split(/\r?\n/).map(s=>s.trim()).filter(Boolean);
+  if(lines.length<1||lines.length>24)throw Error('Bitte 1 bis 24 Spiele eingeben.');
+  return lines.map((line,index)=>{
+    const parts=line.split(';').map(s=>s.trim());
+    if(parts.length!==7)throw Error('Zeile '+(index+1)+': Erwartet 7 mit Semikolon getrennte Felder.');
+    const [league,home_team,away_team,kickText,a,b,c]=parts;
+    const local=kickText.replace(' ','T');
+    if(!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/.test(local))throw Error('Zeile '+(index+1)+': Datum als JJJJ-MM-TT HH:MM angeben.');
+    const date=new Date(local);
+    if(!Number.isFinite(date.getTime()))throw Error('Zeile '+(index+1)+': Ungültiger Anpfiff.');
+    const quotes=[a,b,c].map(v=>Number(v.replace(',','.')));
+    if(!['de','en','es','tr'].includes(league)||home_team.length<2||away_team.length<2
+        ||quotes.some(v=>!Number.isFinite(v)||v<=1||v>999))throw Error('Zeile '+(index+1)+': Liga, Mannschaften oder Quoten ungültig.');
+    return {league,home_team,away_team,kickoff:date.toISOString(),
+      quote_1:quotes[0],quote_x:quotes[1],quote_2:quotes[2]};
+  });
+}
+async function createAdminWeek(){
+  if(!currentProfile||currentProfile.role!=='admin')return;
+  const message=e('adminCreateWeekMessage'),name=e('adminNewWeekName').value.trim();
+  const start=new Date(e('adminNewWeekStart').value),end=new Date(e('adminNewWeekEnd').value);
+  let games;
+  try{
+    games=parseWeekGames(e('adminNewWeekGames').value);
+    if(name.length<5||name.length>80||!Number.isFinite(start.getTime())||!Number.isFinite(end.getTime())||start>=end)
+      throw Error('Bitte Namen und gültigen Beginn/Ende eingeben.');
+    if(games.some(g=>new Date(g.kickoff)<start||new Date(g.kickoff)>end))throw Error('Alle Spieltermine müssen im gewählten Wochenzeitraum liegen.');
+  }catch(err){message.textContent=err.message;return;}
+  if(!confirm('Neue Spielwoche „'+name+'“ mit '+games.length+' Partien speichern? Du kannst sie danach für andere Spieler freigeben.'))return;
+  const btn=e('adminCreateWeekButton');btn.disabled=true;message.textContent='Woche wird angelegt …';
+  try{
+    const {data,error}=await db.rpc('odds_admin_create_week',{
+      p_label:name,p_starts_at:start.toISOString(),p_ends_at:end.toISOString(),p_games:games
+    });
+    if(error)throw error;
+    dbWeekOverrideId=data;adminMemberWeekId=data;
+    await loadDb({preserveScroll:true});
+    await loadAdminMembers();
+    message.textContent='✅ Spielwoche „'+name+'“ mit '+games.length+' Spielen erstellt. Nun Spieler in der Spielerverwaltung für diese Woche anmelden.';
+  }catch(err){message.textContent='Fehler beim Erstellen: '+textError(err);}
+  finally{btn.disabled=false;}
+}
 function standingPoints(n){return Number(n||0).toLocaleString('de-DE',{minimumFractionDigits:2,maximumFractionDigits:2});}
 async function loadLiveStandings(){
   if(!dbWeek||!currentProfile)return;
@@ -844,15 +993,26 @@ async function loadWalletAndSettlement(){
     if(error)throw error;
     walletFunctionsReady=true;
     const wallet=(data||[])[0]||{weeks_played:0,paid_cents:0,won_cents:0,balance_cents:0};
+    walletBalanceCents=Number(wallet.balance_cents||0);
+    refreshAffordabilityUI();
     const stats=[
       ['Mein Saldo',euroCents(wallet.balance_cents)],
       ['Gesamte Einsätze',euroCents(wallet.paid_cents)],
       ['Gesamte Gewinne',euroCents(wallet.won_cents)]
     ];
     e('liveWalletStats').innerHTML=stats.map(([title,value])=>'<div class="stat"><small>'+title+'</small><div class="number">'+value+'</div></div>').join('');
-    e('liveWalletMessage').textContent='Aus '+wallet.weeks_played+' abgeschlossenen Spielwochen · Beiträge werden erst bei der Endabrechnung gebucht.';
+    e('liveWalletMessage').textContent='Abgeschlossene Wochen: '+wallet.weeks_played+' · Der erste Tipp einer offenen Woche belastet dein Guthaben sofort mit 5 €. Gewinn wird erst beim Wochenabschluss gutgeschrieben.';
+    const history=await db.rpc('odds_my_wallet_history');
+    if(!history.error){
+      e('liveWalletHistory').innerHTML=(history.data||[]).map(h=>
+        '<tr><td>'+formatDate(h.booked_at)+'</td><td>'+esc(h.kind)+'</td><td>'+euroCents(h.amount_cents)+'</td><td>'+esc(h.reason)+(h.week_name?' · '+esc(h.week_name):'')+'</td></tr>'
+      ).join('')||'<tr><td colspan="4">Noch keine Buchungen.</td></tr>';
+    }
+
   }catch(err){
     e('liveWalletMessage').textContent='Gewinnkonto ist noch nicht eingerichtet. Bitte zuerst sql/wochenabrechnung_v5_4.sql im Supabase SQL Editor ausführen. '+textError(err);
+    walletBalanceCents=null;
+    refreshAffordabilityUI();
     e('liveWalletStats').innerHTML='<p class="note">Konten werden nach Einrichtung der Datenbank angezeigt.</p>';
   }
   try{
@@ -908,7 +1068,13 @@ async function loadAdminMembers(){
     const {data:weeks,error:weekError}=await db.from('weeks')
       .select('id,label,starts_at,ends_at,settled').order('starts_at',{ascending:false});
     if(weekError)throw weekError;
-    adminMemberWeek=(weeks||[]).find(w=>new Date(w.ends_at)>new Date())||(weeks||[])[0]||null;
+    const preferredWeek=e('adminWeekSelect').value||adminMemberWeekId;
+    adminMemberWeek=(weeks||[]).find(w=>String(w.id)===String(preferredWeek))
+      ||(weeks||[]).find(w=>!w.settled&&new Date(w.ends_at)>new Date())
+      ||(weeks||[])[0]||null;
+    if(adminMemberWeek)adminMemberWeekId=adminMemberWeek.id;
+    e('adminWeekSelect').innerHTML=(weeks||[]).map(w=>'<option value="'+w.id+'">'+esc(w.label)+(w.settled?' · abgeschlossen':'')+'</option>').join('');
+    if(adminMemberWeek)e('adminWeekSelect').value=String(adminMemberWeek.id);
     if(!adminMemberWeek){
       info.textContent='Bitte zunächst eine Spielwoche anlegen.';
       e('membersWeekLabel').textContent='Keine Spielwoche';
@@ -976,6 +1142,12 @@ async function startAuth(){
     e('liveResultGame').addEventListener('change',setSelectedResult);
     e('liveResultSave').addEventListener('click',saveLiveResult);
     e('liveSettleButton').addEventListener('click',settleLiveWeek);
+    e('adminWeekSelect').addEventListener('change',()=>{adminMemberWeekId=e('adminWeekSelect').value;loadAdminMembers();});
+    e('liveWeekSelect').addEventListener('change',()=>{dbWeekOverrideId=e('liveWeekSelect').value;walletBalanceCents=null;loadDb();});
+    e('adminWalletRefreshButton').addEventListener('click',loadAdminWallets);
+    e('adminCreditSubmit').addEventListener('click',addAdminCredit);
+    e('adminCreateWeekButton').addEventListener('click',createAdminWeek);
+    e('walletAdminDetails').addEventListener('toggle',()=>{if(e('walletAdminDetails').open)loadAdminWallets();});
     e('memberAdminDetails').addEventListener('toggle',()=>{
       if(e('memberAdminDetails').open)loadAdminMembers();
     });
