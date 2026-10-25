@@ -3,141 +3,362 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Odds League – Testversion 2</title>
+<meta name="theme-color" content="#102a22">
+<title>Odds League – Version 3 (Demo)</title>
 <style>
-  * { box-sizing: border-box; }
-  body { margin: 0; background: #102a22; color: white; font-family: Arial, sans-serif; }
-  main { max-width: 780px; margin: auto; padding: 25px 16px 50px; }
-  h1 { color: #4ade80; text-align: center; margin-bottom: 5px; }
-  h2 { margin-top: 0; font-size: 21px; }
-  .sub { text-align: center; color: #bdd4c7; }
-  .note { color: #c5d5cb; font-size: 13px; line-height: 1.5; }
-  .panel, .match { background: #204638; border-radius: 16px; padding: 18px; margin-top: 16px; }
-  .counter { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
-  .count { color: #4ade80; font-size: 24px; font-weight: bold; }
-  .progress { height: 9px; background: #315849; border-radius: 9px; overflow: hidden; margin: 12px 0; }
-  #bar { height: 100%; width: 0; background: #4ade80; transition: width .2s; }
-  .filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0; }
-  .filter { background: #315849; color: white; border: 1px solid #527363; border-radius: 10px; padding: 11px; cursor: pointer; }
-  .filter.active { background: #4ade80; color: #102a22; font-weight: bold; }
-  .meta { color: #bfd0c5; font-size: 13px; }
-  .teams { font-size: 19px; font-weight: bold; margin: 10px 0 16px; }
-  .choices { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .choice { background: #315849; color: white; border: 2px solid transparent; border-radius: 12px; padding: 12px 5px; cursor: pointer; }
-  .choice b { display: block; font-size: 23px; }
-  .choice small { display: block; margin: 5px 0; font-size: 11px; }
-  .choice strong { color: #4ade80; font-size: 18px; }
-  .choice.active { border-color: #4ade80; background: #174b32; }
-  .saved { color: #4ade80; font-size: 13px; margin-top: 12px; }
-  .entry { border-top: 1px solid #517463; padding: 12px 0; font-size: 14px; }
-  .remove { float: right; border: 0; background: transparent; color: #ffcccc; text-decoration: underline; cursor: pointer; }
-  .reset { background: #315849; border: 1px solid #668775; border-radius: 10px; color: white; padding: 11px 13px; cursor: pointer; }
-  #meldung { min-height: 22px; color: #4ade80; font-weight: bold; }
+:root { color-scheme: dark; --bg:#102a22; --panel:#204638; --button:#315849; --accent:#b9ff86; --green:#4ade80; --line:#50745f; --muted:#d0ded2; }
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:#fff; font:16px/1.5 Arial,Helvetica,sans-serif; }
+main { max-width:900px; margin:auto; padding:23px 16px 48px; }
+h1 { font-size:clamp(28px,5vw,40px); color:var(--accent); text-align:center; margin:5px 0 3px; letter-spacing:.02em; }
+h2 { font-size:22px; margin:0 0 10px; }
+h3 { font-size:17px; margin:0 0 10px; }
+p { margin:8px 0; }
+.sub { text-align:center; color:var(--muted); margin:0 0 18px; }
+.notice { border:1px solid #8a774d; background:#3d392b; padding:13px 16px; border-radius:12px; font-size:14px; margin:14px 0; }
+.panel,.match { background:var(--panel); border-radius:16px; padding:19px; margin:14px 0; }
+.topline { display:flex; gap:12px; flex-wrap:wrap; align-items:end; justify-content:space-between; }
+label { display:block; font-size:14px; margin:4px 0 5px; font-weight:600; }
+input,select { font:inherit; border-radius:9px; border:1px solid #7aa58d; background:#143428; color:white; padding:11px; min-height:43px; max-width:100%; }
+input { width:100%; }
+button { font:inherit; cursor:pointer; }
+button:disabled { cursor:not-allowed; opacity:.52; }
+.btn { background:var(--accent); color:#122920; font-weight:bold; border:0; border-radius:10px; padding:12px 16px; min-height:44px; }
+.btn.secondary { color:white; background:var(--button); border:1px solid #71947d; }
+.btn.danger { background:#643739; color:#fff; border:1px solid #b87878; }
+nav { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; margin:16px 0; }
+.tab { background:var(--button); color:white; border:1px solid #648c73; padding:13px 7px; border-radius:11px; font-weight:700; font-size:14px; min-height:47px; }
+.tab.active { background:var(--accent); color:#102a22; border-color:var(--accent); }
+.stats { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:11px; }
+.stat { background:#173a2d; border:1px solid #315849; border-radius:12px; padding:14px; }
+.stat .number { font-size:clamp(20px,4vw,26px); font-weight:bold; color:var(--accent); }
+.stat small { display:block; color:var(--muted); font-size:12px; }
+.note,.meta { color:var(--muted); font-size:13px; }
+.filters { display:flex; flex-wrap:wrap; gap:8px; margin:15px 0; }
+.filter { color:#fff; background:var(--button); padding:10px 12px; border:1px solid #648c73; border-radius:10px; }
+.filter.active { background:var(--accent); color:#132e23; }
+.match { padding:16px; }
+.teams { font-size:20px; font-weight:bold; margin:7px 0 13px; }
+.choices { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
+.choice { background:var(--button); color:#fff; border:2px solid transparent; border-radius:11px; min-height:88px; padding:10px 4px; }
+.choice b,.choice strong,.choice small { display:block; }
+.choice b { font-size:23px; }
+.choice strong { color:var(--accent); font-size:18px; }
+.choice small { font-size:11px; }
+.choice.active { background:#235c3c; border-color:var(--accent); }
+.saved { color:var(--accent); font-size:13px; margin-top:11px; }
+.entry { padding:11px 0; border-top:1px solid var(--line); font-size:14px; }
+.entry:last-child { border-bottom:1px solid var(--line); }
+.entry button { float:right; background:none; border:0; color:#ffd4d4; text-decoration:underline; font-size:13px; }
+.progress { height:9px; border-radius:8px; background:#315849; overflow:hidden; margin:12px 0; }
+.progress div { background:var(--accent); height:100%; transition:width .2s; }
+.status { min-height:23px; color:var(--accent); font-weight:bold; }
+.scroll { overflow-x:auto; }
+table { border-collapse:collapse; width:100%; min-width:520px; text-align:left; }
+th,td { padding:12px 9px; border-bottom:1px solid var(--line); font-size:14px; vertical-align:middle; }
+th { color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.035em; }
+tr.self { background:#315849; }
+.pill { display:inline-block; font-size:12px; padding:4px 9px; border:1px solid #71947d; border-radius:20px; }
+.admin-row { display:grid; grid-template-columns:1fr 165px; gap:9px; align-items:center; border-top:1px solid var(--line); padding:10px 0; }
+.admin-row select { width:100%; }
+.fields { display:grid; grid-template-columns:1fr auto; gap:9px; align-items:end; }
+.field3 { display:grid; grid-template-columns:1fr 140px; gap:9px; }
+.space { margin-top:14px; }
+.flex { display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+.sep { height:1px; background:var(--line); margin:20px 0; }
+code { color:var(--accent); }
+@media(max-width:580px) {
+ main { padding:14px 10px 36px; }
+ .panel { padding:15px; }
+ nav { grid-template-columns:repeat(2,minmax(0,1fr)); }
+ .stats { gap:6px; }
+ .stat { padding:10px; }
+ .choice strong { font-size:16px; }
+ .admin-row { grid-template-columns:1fr 120px; }
+ .fields,.field3 { grid-template-columns:1fr; }
+ .fields button { width:100%; }
+}
 </style>
 </head>
 <body>
 <main>
-  <h1>⚽ ODDS LEAGUE</h1>
-  <p class="sub">Deine private Fußball-Tippliga by @elmurino</p>
-  <div class="panel">
-    <div class="counter"><h2>Meine Wochentipps</h2><span class="count" id="zaehler">0 / 10</span></div>
-    <div class="progress"><div id="bar"></div></div>
-    <p class="note">Maximal 10 verschiedene Spiele. Ein vorhandener Tipp kann geändert oder durch erneutes Antippen entfernt werden.</p>
-    <p id="meldung" aria-live="polite"></p>
-  </div>
-
-  <h2 style="margin-top:26px">Spielauswahl</h2>
-  <p class="note">12 frei erfundene Testbegegnungen mit Beispielquoten. Keine echten Spielpläne oder Interwetten-Quoten.</p>
-  <div class="filters" id="filter"></div>
-  <div id="spiele"></div>
-
-  <div class="panel">
-    <h2>Meine gespeicherten Tipps</h2>
-    <div id="meineTipps"></div>
-    <button class="reset" onclick="allesLoeschen()">Alle Testtipps löschen</button>
-  </div>
-  <p class="note">Testmodus: Die Tipps liegen nur in diesem Browser. Noch kein Login, keine echte Anstoßsperre, keine Ergebnisse und kein Jackpot.</p>
+<header>
+<h1>⚽ ODDS LEAGUE</h1>
+<p class="sub">Deine private Fußball-Tippliga · Version 3</p>
+</header>
+<div class="notice"><strong>Nur Demo – kein geschützter Zugang.</strong> Du kannst Spieler hier zum Test wechseln und den Adminbereich öffnen. Alles liegt ausschließlich in diesem Browser. Bitte noch keine echten Zugangsdaten oder vertraulichen Spielerdaten eingeben.</div>
+<div class="panel topline">
+  <div><label for="spielerwahl">Testspieler auswählen</label><select id="spielerwahl" onchange="spielerWechseln(this.value)"></select></div>
+  <span class="pill" id="wocheLabel">Demo-Woche 1</span>
+</div>
+<nav aria-label="Bereiche">
+  <button class="tab active" data-tab="tippen" onclick="tabWechseln('tippen')">⚽ Tippen</button>
+  <button class="tab" data-tab="rangliste" onclick="tabWechseln('rangliste')">🏆 Rangliste</button>
+  <button class="tab" data-tab="konten" onclick="tabWechseln('konten')">💶 Gewinnkonten</button>
+  <button class="tab" data-tab="admin" onclick="tabWechseln('admin')">⚙️ Admin (Demo)</button>
+</nav>
+<div class="stats" id="stats"></div>
+<section id="inhalt"></section>
+<p class="note">Testdaten: 12 erfundene Begegnungen und Beispielquoten, keine echten Interwetten-Quoten oder Ergebnisse. Die 5 € pro Spieler sind rein virtuell. Live-Spielpläne, echte Anstoßsperre, sichere Anmeldung und gemeinsamer Datenstand folgen erst mit Server und Datenbank.</p>
 </main>
 <script>
-const ligen = {
-  alle: "Alle Ligen", de: "🇩🇪 Bundesliga", en: "🏴 Premier League",
-  es: "🇪🇸 La Liga", tr: "🇹🇷 Süper Lig"
-};
+'use strict';
+const ligen = {alle:'Alle Ligen',de:'🇩🇪 Bundesliga',en:'🏴 Premier League',es:'🇪🇸 La Liga',tr:'🇹🇷 Süper Lig'};
 const spiele = [
-  {id:"de1", l:"de", tag:"Fr", zeit:"20:30", heim:"Bayern München", gast:"Borussia Dortmund", q:[2.10,3.40,3.15]},
-  {id:"de2", l:"de", tag:"Sa", zeit:"15:30", heim:"Leverkusen", gast:"Frankfurt", q:[1.85,3.60,4.20]},
-  {id:"de3", l:"de", tag:"So", zeit:"17:30", heim:"Stuttgart", gast:"Freiburg", q:[2.05,3.25,3.70]},
-  {id:"en1", l:"en", tag:"Sa", zeit:"13:30", heim:"Arsenal", gast:"Chelsea", q:[1.95,3.50,3.80]},
-  {id:"en2", l:"en", tag:"Sa", zeit:"18:30", heim:"Liverpool", gast:"Newcastle", q:[1.75,3.85,4.40]},
-  {id:"en3", l:"en", tag:"Mo", zeit:"21:00", heim:"Manchester City", gast:"Tottenham", q:[1.65,4.10,4.70]},
-  {id:"es1", l:"es", tag:"Sa", zeit:"21:00", heim:"Real Madrid", gast:"Sevilla", q:[1.45,4.40,6.80]},
-  {id:"es2", l:"es", tag:"So", zeit:"16:15", heim:"Barcelona", gast:"Villarreal", q:[1.60,4.00,5.20]},
-  {id:"es3", l:"es", tag:"Mo", zeit:"21:00", heim:"Betis", gast:"Valencia", q:[2.15,3.10,3.55]},
-  {id:"tr1", l:"tr", tag:"Fr", zeit:"19:00", heim:"Galatasaray", gast:"Trabzonspor", q:[1.70,3.70,4.60]},
-  {id:"tr2", l:"tr", tag:"So", zeit:"18:00", heim:"Fenerbahçe", gast:"Beşiktaş", q:[2.00,3.45,3.65]},
-  {id:"tr3", l:"tr", tag:"Mo", zeit:"19:00", heim:"Başakşehir", gast:"Kasımpaşa", q:[1.90,3.55,3.95]}
+{id:'de1',l:'de',tag:'Fr',zeit:'20:30',heim:'Bayern München',gast:'Borussia Dortmund',q:[2.10,3.40,3.15]},
+{id:'de2',l:'de',tag:'Sa',zeit:'15:30',heim:'Leverkusen',gast:'Frankfurt',q:[1.85,3.60,4.20]},
+{id:'de3',l:'de',tag:'So',zeit:'17:30',heim:'Stuttgart',gast:'Freiburg',q:[2.05,3.25,3.70]},
+{id:'en1',l:'en',tag:'Sa',zeit:'13:30',heim:'Arsenal',gast:'Chelsea',q:[1.95,3.50,3.80]},
+{id:'en2',l:'en',tag:'Sa',zeit:'18:30',heim:'Liverpool',gast:'Newcastle',q:[1.75,3.85,4.40]},
+{id:'en3',l:'en',tag:'Mo',zeit:'21:00',heim:'Manchester City',gast:'Tottenham',q:[1.65,4.10,4.70]},
+{id:'es1',l:'es',tag:'Sa',zeit:'21:00',heim:'Real Madrid',gast:'Sevilla',q:[1.45,4.40,6.80]},
+{id:'es2',l:'es',tag:'So',zeit:'16:15',heim:'Barcelona',gast:'Villarreal',q:[1.60,4.00,5.20]},
+{id:'es3',l:'es',tag:'Mo',zeit:'21:00',heim:'Betis',gast:'Valencia',q:[2.15,3.10,3.55]},
+{id:'tr1',l:'tr',tag:'Fr',zeit:'19:00',heim:'Galatasaray',gast:'Trabzonspor',q:[1.70,3.70,4.60]},
+{id:'tr2',l:'tr',tag:'So',zeit:'18:00',heim:'Fenerbahçe',gast:'Beşiktaş',q:[2.00,3.45,3.65]},
+{id:'tr3',l:'tr',tag:'Mo',zeit:'19:00',heim:'Başakşehir',gast:'Kasımpaşa',q:[1.90,3.55,3.95]}
 ];
-const key = "odds-league-demo-v2";
-const zeichen = ["1", "X", "2"];
-let filterAktiv = "alle";
-let tipps = {};
-try {
-  const alt = JSON.parse(localStorage.getItem(key) || "{}");
-  if (alt && typeof alt === "object" && !Array.isArray(alt)) {
-    for (const spiel of spiele) {
-      if (zeichen.includes(alt[spiel.id])) tipps[spiel.id] = alt[spiel.id];
-    }
+const ausgaenge=['1','X','2'];
+const v3Key='odds-league-demo-v3';
+const v2Key='odds-league-demo-v2';
+const euro = cents => (cents/100).toLocaleString('de-DE',{style:'currency',currency:'EUR'});
+const zahl = n => n.toLocaleString('de-DE',{maximumFractionDigits:2});
+const quote = n => Number(n).toFixed(2).replace('.',',');
+const esc = t => String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const spielMitId = id => spiele.find(s=>s.id===id);
+function startDaten(){
+ return {week:1, nextPlayer:4, selected:'p1', players:[
+  {id:'p1',name:'Spieler 1 (ich)',balance:0},
+  {id:'p2',name:'Spieler 2',balance:0},
+  {id:'p3',name:'Spieler 3',balance:0}
+ ], picks:{p1:{},p2:{},p3:{}},results:{},settled:false,winners:[],ledger:[],audit:[]};
+}
+function ladeDaten(){
+ try {
+  const stored=JSON.parse(localStorage.getItem(v3Key)||'null');
+  if(stored && Array.isArray(stored.players) && stored.players.length && stored.picks && stored.results && Array.isArray(stored.ledger) && Array.isArray(stored.audit)){
+   if(!stored.players.some(p=>p.id===stored.selected)) stored.selected=stored.players[0].id;
+   return stored;
   }
-} catch (e) { tipps = {}; }
-function quote(wert) { return wert.toFixed(2).replace(".", ","); }
-function sichern() {
-  try { localStorage.setItem(key, JSON.stringify(tipps)); }
-  catch (e) { document.getElementById("meldung").textContent = "Speichern im Browser nicht möglich."; }
-}
-function ligaWaehlen(liga) { filterAktiv = liga; anzeigen(); }
-function tippWaehlen(id, wahl) {
-  if (tipps[id] === wahl) {
-    delete tipps[id];
-    document.getElementById("meldung").textContent = "Tipp entfernt.";
-  } else if (!tipps[id] && Object.keys(tipps).length >= 10) {
-    document.getElementById("meldung").textContent = "Maximal 10 Tipps! Entferne zuerst einen Tipp.";
-    return;
-  } else {
-    tipps[id] = wahl;
-    document.getElementById("meldung").textContent = "Tipp " + wahl + " gespeichert.";
+ } catch(e) {}
+ const initial=startDaten();
+ try {
+  // Einmalige Übernahme der bisherigen Auswahl aus Version 2 in Spieler 1.
+  const alt=JSON.parse(localStorage.getItem(v2Key)||'{}');
+  for(const s of spiele){
+   if(ausgaenge.includes(alt[s.id])) {
+    const wahl=alt[s.id];
+    initial.picks.p1[s.id]={tipp:wahl,quote:s.q[ausgaenge.indexOf(wahl)]};
+   }
   }
-  sichern(); anzeigen();
+ } catch(e) {}
+ return initial;
 }
-function allesLoeschen() {
-  if (!confirm("Wirklich alle 12 Testspiele von deinen Tipps befreien?")) return;
-  tipps = {};
-  sichern(); anzeigen();
-  document.getElementById("meldung").textContent = "Alle Testtipps gelöscht.";
+let data=ladeDaten();
+let tab='tippen';
+let liga='alle';
+let status='';
+function speichern(){
+ try { localStorage.setItem(v3Key,JSON.stringify(data)); }
+ catch(e) { status='Browser-Speicherung fehlgeschlagen. Die Demo-Daten können verloren gehen.'; }
 }
-function anzeigen() {
-  const anzahl = Object.keys(tipps).length;
-  document.getElementById("zaehler").textContent = anzahl + " / 10";
-  document.getElementById("bar").style.width = (anzahl * 10) + "%";
-  document.getElementById("filter").innerHTML = Object.entries(ligen).map(([id, name]) =>
-    `<button class="filter ${filterAktiv === id ? "active" : ""}" onclick="ligaWaehlen('${id}')">${name}</button>`
-  ).join("");
-  document.getElementById("spiele").innerHTML = spiele.filter(s => filterAktiv === "alle" || s.l === filterAktiv).map(s => {
-    const gewaehlt = tipps[s.id];
-    const auswahl = zeichen.map((z, i) => `<button class="choice ${gewaehlt === z ? "active" : ""}"
-      onclick="tippWaehlen('${s.id}','${z}')"><b>${z}</b><small>${["Heimsieg","Remis","Auswärtssieg"][i]}</small><strong>${quote(s.q[i])}</strong></button>`).join("");
-    return `<div class="match"><div class="meta">${ligen[s.l]} · ${s.tag} ${s.zeit} Uhr (Demo)</div>
-      <div class="teams">${s.heim} – ${s.gast}</div><div class="choices">${auswahl}</div>
-      ${gewaehlt ? `<div class="saved">✓ Gespeichert: ${gewaehlt} · Quote ${quote(s.q[zeichen.indexOf(gewaehlt)])}</div>` : ""}</div>`;
-  }).join("");
-  const gewaehlt = spiele.filter(s => tipps[s.id]);
-  document.getElementById("meineTipps").innerHTML = gewaehlt.length ? gewaehlt.map(s => {
-    const wahl = tipps[s.id];
-    const punkte = (s.q[zeichen.indexOf(wahl)] * 10).toLocaleString("de-DE", {maximumFractionDigits:2});
-    return `<div class="entry"><button class="remove" onclick="tippWaehlen('${s.id}','${wahl}')">Entfernen</button>
-      <strong>${s.heim} – ${s.gast}</strong><br>${wahl} · Quote ${quote(s.q[zeichen.indexOf(wahl)])} · ${punkte} Punkte bei richtigem Tipp</div>`;
-  }).join("") : `<p class="note">Noch keine Tipps ausgewählt.</p>`;
+function player(){ return data.players.find(p=>p.id===data.selected) || data.players[0]; }
+function alleTipps(id){ return data.picks[id] || {}; }
+function tippzahl(id){ return Object.keys(alleTipps(id)).length; }
+function punkte(id){
+ let sum=0;
+ for(const [spielId,pick] of Object.entries(alleTipps(id))){
+  if(pick && data.results[spielId] === pick.tipp) sum+=Math.round(Number(pick.quote)*100)/10;
+ }
+ return Math.round(sum*100)/100;
 }
-anzeigen();
+function logAudit(art,alt,neu,grund){
+ data.audit.unshift({time:new Date().toISOString(),week:data.week,art,alt:String(alt),neu:String(neu),grund:String(grund)});
+}
+function logKonto(playerId,cents,typ,grund){
+ data.ledger.unshift({time:new Date().toISOString(),week:data.week,playerId,cents,typ,grund});
+}
+function topSpieler(){
+ return [...data.players].sort((a,b)=>punkte(b.id)-punkte(a.id) || a.name.localeCompare(b.name,'de'));
+}
+function jackpot(){return data.players.length*500;}
+function entschieden(){return spiele.filter(s=>ausgaenge.includes(data.results[s.id])).length;}
+function wechselSicht(welche){tab=welche; status=''; render(); window.scrollTo({top:0,behavior:'auto'});}
+function tabWechseln(welche){wechselSicht(welche);}
+function spielerWechseln(id){
+ if(!data.players.some(p=>p.id===id))return;
+ data.selected=id; speichern(); status=''; render();
+}
+function ligaWaehlen(id){ liga=id; render(); }
+function tippWaehlen(spielId,wahl){
+ const match=spielMitId(spielId);
+ if(!match || !ausgaenge.includes(wahl))return;
+ if(data.settled || data.results[spielId]){status='Dieses Spiel ist bereits ausgewertet oder die Demowoche abgeschlossen.';render();return;}
+ if(!data.picks[data.selected]) data.picks[data.selected]={};
+ const picks=data.picks[data.selected];
+ if(picks[spielId] && picks[spielId].tipp===wahl){delete picks[spielId];status='Tipp entfernt.';}
+ else if(!picks[spielId] && Object.keys(picks).length>=10){status='Maximal 10 Tipps! Entferne zuerst einen anderen Tipp.';render();return;}
+ else {picks[spielId]={tipp:wahl,quote:match.q[ausgaenge.indexOf(wahl)]}; status=`Tipp ${wahl} gespeichert – Quote ${quote(picks[spielId].quote)}.`;}
+ speichern();render();
+}
+function alleLoeschen(){
+ if(data.settled || entschieden()>0){status='Nach der Ergebnis-Erfassung können die Tipps der laufenden Demo nicht pauschal gelöscht werden.';render();return;}
+ if(!confirm('Wirklich alle Testtipps des ausgewählten Spielers für diese Woche löschen?'))return;
+ data.picks[data.selected]={}; speichern();status='Testtipps gelöscht.';render();
+}
+function kontokorrektur(){
+ const id=document.getElementById('kontoSpieler').value;
+ const amount=document.getElementById('kontoBetrag').value.trim().replace(',','.');
+ const reason=document.getElementById('kontoGrund').value.trim();
+ const p=data.players.find(x=>x.id===id);
+ const num=Number(amount);
+ if(!p || !amount || !Number.isFinite(num) || !Number.isInteger(Math.round(num*100)) || Math.abs(num)>10000 || Math.abs(num*100-Math.round(num*100))>0.00001 || !reason){status='Spieler, Betrag (max. 2 Nachkommastellen) und Begründung eingeben.';render();return;}
+ const cents=Math.round(num*100);
+ if(!cents){status='Der Korrekturbetrag darf nicht 0 sein.';render();return;}
+ const old=p.balance;
+ if(old+cents<0){status='Das virtuelle Gewinnkonto darf nicht negativ werden.';render();return;}
+ p.balance+=cents;
+ logKonto(id,cents,'Manuelle Korrektur',reason);
+ logAudit('Gewinnkonto '+p.name,euro(old),euro(p.balance),reason);
+ speichern();status='Kontokorrektur gespeichert und protokolliert.';render();
+}
+function spielerHinzufuegen(){
+ if(data.settled){status='Neue Spieler können nach der Wochenabrechnung erst für die nächste Demo-Woche hinzugefügt werden.';render();return;}
+ const input=document.getElementById('neuerName');
+ const name=input.value.trim().replace(/\s+/g,' ');
+ if(name.length<2 || name.length>40){status='Bitte einen Spielernamen mit 2 bis 40 Zeichen eingeben.';render();return;}
+ if(data.players.some(p=>p.name.toLocaleLowerCase('de')===name.toLocaleLowerCase('de'))){status='Dieser Spielername existiert bereits.';render();return;}
+ const id='p'+data.nextPlayer++;
+ data.players.push({id,name,balance:0}); data.picks[id]={};
+ logAudit('Spieler angelegt','–',name,'Admin-Demo');
+ speichern();status=`${name} hinzugefügt. Virtueller Jackpot jetzt ${euro(jackpot())}.`;render();
+}
+function ergebnisSetzen(spielId,ergebnis){
+ if(data.settled){status='Bereits abgerechnet: Ergebnisse sind in dieser Demo gesperrt.';render();return;}
+ if(!spielMitId(spielId) || (ergebnis && !ausgaenge.includes(ergebnis)))return;
+ const alt=data.results[spielId]||'offen';
+ const neu=ergebnis||'offen';
+ if(alt===neu)return;
+ const grund=document.getElementById('resultGrund').value.trim();
+ if(!grund){status='Bitte zuerst eine Begründung für die Ergebnisänderung eintragen.';render();return;}
+ if(ergebnis)data.results[spielId]=ergebnis;
+ else delete data.results[spielId];
+ logAudit('Spielergebnis '+spielId,alt,neu,grund);
+ speichern();status=`Ergebnis für ${spielMitId(spielId).heim} – ${spielMitId(spielId).gast} protokolliert.`;render();
+}
+function demoErgebnisse(){
+ if(data.settled){status='Die Woche ist bereits abgerechnet.';render();return;}
+ if(!confirm('Alle 12 Testresultate simulieren? Bisher eingetragene Resultate werden dabei überschrieben.'))return;
+ const beispiel=['1','X','2','1','2','1','1','X','2','1','2','X'];
+ for(let i=0;i<spiele.length;i++){
+  const s=spiele[i], alt=data.results[s.id]||'offen';
+  data.results[s.id]=beispiel[i];
+  if(alt!==beispiel[i])logAudit('Spielergebnis '+s.id,alt,beispiel[i],'Automatisch erzeugte Demo-Resultate');
+ }
+ speichern();status='Alle 12 Demo-Resultate erfasst. Nun ist die Abrechnung möglich.';render();
+}
+function abrechnen(){
+ if(data.settled || entschieden()!==spiele.length){status='Die Abrechnung ist erst mit 12 von 12 Ergebnissen möglich.';render();return;}
+ if(!confirm(`Demo-Woche ${data.week} abrechnen und ${euro(jackpot())} virtuell gutschreiben?`))return;
+ const sorted=topSpieler(), max=punkte(sorted[0].id);
+ // Feste Cent-Regel: Restcent gehen alphabetisch nach Spielernamen an punktgleiche Sieger.
+ const winners=sorted.filter(p=>Math.abs(punkte(p.id)-max)<0.00001).sort((a,b)=>a.name.localeCompare(b.name,'de'));
+ const cents=jackpot(), base=Math.floor(cents/winners.length), extra=cents%winners.length;
+ for(let i=0;i<winners.length;i++){
+  const p=winners[i], gain=base+(i<extra?1:0);
+  p.balance+=gain;
+  logKonto(p.id,gain,'Wochengewinn',`Demo-Woche ${data.week}: ${zahl(max)} Punkte, geteilter Jackpot bei Gleichstand`);
+ }
+ data.settled=true;
+ data.winners=winners.map(x=>x.id);
+ logAudit('Wochenabrechnung','offen','abgerechnet',`${euro(cents)} an ${winners.map(w=>w.name).join(', ')} verteilt`);
+ speichern();status=`Demo-Woche abgerechnet: ${euro(cents)} verteilt.`;wechselSicht('rangliste');status='Woche erfolgreich abgerechnet. Gewinne stehen auf den Konten.';render();
+}
+function neueWoche(){
+ if(!data.settled){status='Bitte zuerst die laufende Demo-Woche abrechnen.';render();return;}
+ if(!confirm('Neue Demo-Woche beginnen? Die bisherigen Wochen-Tipps und Ergebnisse werden zurückgesetzt; Gewinnkonten und Protokoll bleiben erhalten.'))return;
+ data.week+=1; data.results={};data.settled=false;data.winners=[];
+ for(const p of data.players)data.picks[p.id]={};
+ logAudit('Neue Demowoche','Woche '+(data.week-1),'Woche '+data.week,'Admin-Demo');
+ speichern();status='Neue Demo-Woche gestartet.';wechselSicht('tippen');status='Neue Demo-Woche gestartet.';render();
+}
+function renderTop(){
+ document.getElementById('spielerwahl').innerHTML=data.players.map(p=>`<option value="${p.id}" ${p.id===data.selected?'selected':''}>${esc(p.name)}</option>`).join('');
+ document.getElementById('wocheLabel').textContent='Demo-Woche '+data.week + (data.settled?' · abgerechnet':'');
+ document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
+ document.getElementById('stats').innerHTML=`
+ <div class="stat"><small>Virtueller Jackpot</small><div class="number">${euro(jackpot())}</div><small>${data.players.length} Spieler × 5 €</small></div>
+ <div class="stat"><small>Meine Tipps</small><div class="number">${tippzahl(data.selected)} / 10</div><small>Demo-Woche ${data.week}</small></div>
+ <div class="stat"><small>Ergebnisse</small><div class="number">${entschieden()} / 12</div><small>${data.settled?'Abgerechnet':'Noch offen'}</small></div>`;
+}
+function viewTippen(){
+ const picks=alleTipps(data.selected);
+ const count=tippzahl(data.selected);
+ const matches=spiele.filter(s=>liga==='alle'||s.l===liga).map(s=>{
+  const selected=picks[s.id],locked=!!data.results[s.id]||data.settled;
+  const buttons=ausgaenge.map((a,i)=>`<button class="choice ${selected&&selected.tipp===a?'active':''}" ${locked?'disabled':''} onclick="tippWaehlen('${s.id}','${a}')"><b>${a}</b><small>${['Heimsieg','Remis','Auswärtssieg'][i]}</small><strong>${quote(s.q[i])}</strong></button>`).join('');
+  const info=selected?`<div class="saved">✓ Gespeichert: ${selected.tipp} · Quote ${quote(selected.quote)}${data.results[s.id]?' · '+(data.results[s.id]===selected.tipp?'RICHTIG':'FALSCH'):''}</div>`:'';
+  return `<article class="match"><div class="meta">${ligen[s.l]} · ${s.tag} ${s.zeit} Uhr (Demo)${locked?' · Ergebnis erfasst / gesperrt':''}</div><div class="teams">${esc(s.heim)} – ${esc(s.gast)}</div><div class="choices">${buttons}</div>${info}</article>`;
+ }).join('');
+ const list=spiele.filter(s=>picks[s.id]).map(s=>{
+  const pick=picks[s.id],correct=data.results[s.id]===pick.tipp;
+  const state=data.results[s.id]?(correct?'✓ richtig':'✕ falsch'):'noch offen';
+  const remove=(!data.settled&&!data.results[s.id])?`<button onclick="tippWaehlen('${s.id}','${pick.tipp}')">Entfernen</button>`:'';
+  return `<div class="entry">${remove}<strong>${esc(s.heim)} – ${esc(s.gast)}</strong><br>${pick.tipp} · Quote ${quote(pick.quote)} · ${zahl(pick.quote*10)} mögliche Punkte · ${state}</div>`;
+ }).join('');
+ return `<section class="panel"><h2>Meine Wochentipps: ${esc(player().name)}</h2>
+ <div class="progress"><div style="width:${count*10}%"></div></div>
+ <p class="note">Maximal zehn verschiedene Spiele. Bis zur Ergebniserfassung kannst du deine Auswahl ändern. Gespeicherte Quoten bleiben fest.</p>
+ <p class="status" aria-live="polite">${esc(status)}</p></section>
+ <h2 style="margin-top:25px">Spielauswahl</h2><p class="note">12 frei erfundene Testbegegnungen und Beispielquoten – keine Live-Daten.</p>
+ <div class="filters">${Object.entries(ligen).map(([id,name])=>`<button class="filter ${liga===id?'active':''}" onclick="ligaWaehlen('${id}')">${name}</button>`).join('')}</div>
+ ${matches}
+ <div class="panel"><h2>Meine gespeicherten Tipps</h2>${list||'<p class="note">Noch keine Tipps gewählt.</p>'}<div class="space"><button class="btn secondary" onclick="alleLoeschen()" ${data.settled||entschieden()>0?'disabled':''}>Alle meine Testtipps löschen</button></div></div>`;
+}
+function viewRangliste(){
+ const rows=topSpieler().map((p,i)=>{
+  const won=data.winners.includes(p.id);
+  return `<tr class="${p.id===data.selected?'self':''}"><td>${i+1}.</td><td><strong>${esc(p.name)}</strong>${won?' 🏆':''}${p.id===data.selected?' (du in dieser Demo)':''}</td><td>${tippzahl(p.id)}</td><td><strong>${zahl(punkte(p.id))}</strong></td></tr>`;
+ }).join('');
+ const winners=data.winners.map(id=>data.players.find(p=>p.id===id)).filter(Boolean);
+ return `<div class="panel"><h2>🏆 Rangliste · Demo-Woche ${data.week}</h2>
+ <p class="note">Punkte nur für richtige 1-X-2-Tipps zu den jeweils gespeicherten Quoten (Quote × 10). Noch offene Ergebnisse bringen vorläufig keine Punkte.</p>
+ <p class="status">${esc(status)}</p><div class="scroll"><table><thead><tr><th>Platz</th><th>Spieler</th><th>Tipps</th><th>Punkte</th></tr></thead><tbody>${rows}</tbody></table></div>
+ <p>${data.settled?`<strong>Wochensieger:</strong> ${winners.map(p=>esc(p.name)).join(', ')} · Jackpot ${euro(jackpot())} gutgeschrieben.`:'<span class="pill">Vorläufig · die Woche wurde noch nicht abgerechnet</span>'}</p>
+ <p class="note">Gleichstand auf Platz 1: Der virtuelle Jackpot wird gleichmäßig geteilt. Restcent erhalten die Gewinner alphabetisch nach Namen.</p></div>`;
+}
+function viewKonten(){
+ const rows=[...data.players].sort((a,b)=>b.balance-a.balance||a.name.localeCompare(b.name,'de')).map(p=>`<tr class="${p.id===data.selected?'self':''}"><td>${esc(p.name)}</td><td><strong>${euro(p.balance)}</strong></td></tr>`).join('');
+ const movements=data.ledger.map(l=>{
+  const p=data.players.find(p=>p.id===l.playerId);
+  return `<tr><td>${new Date(l.time).toLocaleDateString('de-DE')}</td><td>${esc(p?p.name:'Unbekannt')}</td><td>${esc(l.typ)}</td><td>${l.cents>=0?'+':''}${euro(l.cents)}</td><td>${esc(l.grund)}</td></tr>`;
+ }).join('');
+ return `<section class="panel"><h2>💶 Virtuelle Gewinnkonten</h2><p class="note">Jeder registrierte Spieler zählt pro Woche mit einem virtuellen Beitrag von 5 €, auch ohne Tipp. Beiträge werden nicht als echte Zahlungen erfasst und nicht von den Gewinnkonten abgezogen.</p>
+ <p class="status">${esc(status)}</p><div class="scroll"><table><thead><tr><th>Spieler</th><th>Gewinnkonto</th></tr></thead><tbody>${rows}</tbody></table></div>
+ <h3 class="space">Geldbewegungen (virtuell)</h3><div class="scroll"><table><thead><tr><th>Datum</th><th>Spieler</th><th>Vorgang</th><th>Betrag</th><th>Grund</th></tr></thead><tbody>${movements||'<tr><td colspan="5">Noch keine virtuellen Gewinne oder Korrekturen.</td></tr>'}</tbody></table></div></section>`;
+}
+function viewAdmin(){
+ const resultInputs=spiele.map(s=>`<div class="admin-row"><div><strong>${esc(s.heim)} – ${esc(s.gast)}</strong><div class="meta">${ligen[s.l]} · ${s.tag} ${s.zeit} Uhr</div></div><select aria-label="Ergebnis ${esc(s.heim)} gegen ${esc(s.gast)}" onchange="ergebnisSetzen('${s.id}',this.value)" ${data.settled?'disabled':''}><option value="" ${!data.results[s.id]?'selected':''}>Offen</option>${ausgaenge.map(a=>`<option value="${a}" ${data.results[s.id]===a?'selected':''}>${a}</option>`).join('')}</select></div>`).join('');
+ const audit=data.audit.slice(0,100).map(a=>`<tr><td>${new Date(a.time).toLocaleString('de-DE')}</td><td>${a.week}</td><td>${esc(a.art)}</td><td>${esc(a.alt)}</td><td>${esc(a.neu)}</td><td>${esc(a.grund)}</td></tr>`).join('');
+ return `<section class="panel"><h2>⚙️ Admin-Demobereich</h2><p class="note">Dieser Bereich ist <strong>nicht geschützt</strong>. Jeder mit dem Seitenlink kann ihn auf dem eigenen Gerät bedienen; Änderungen sind nur dort sichtbar.</p><p class="status">${esc(status)}</p>
+ <h3>Spieler anlegen</h3><div class="fields"><div><label for="neuerName">Spielername (keine Passwörter eingeben)</label><input id="neuerName" maxlength="40" placeholder="z. B. Spieler 4" autocomplete="off"></div><button class="btn" onclick="spielerHinzufuegen()" ${data.settled?'disabled':''}>Hinzufügen</button></div>
+ <p class="note">Zurzeit ${data.players.length} Teilnehmer = ${euro(jackpot())} virtueller Wochenjackpot. Jeder angelegte Spieler zählt mit, unabhängig von Tipps.</p>
+ <div class="sep"></div><h3>Test-Ergebnisse eintragen</h3><p class="note">Für jede Korrektur wird der alte und neue Wert samt Begründung protokolliert. Ergebnis-Erfassung sperrt die Tipps zum betreffenden Spiel.</p>
+ <label for="resultGrund">Begründung für einzelne Ergebnisänderung</label><input id="resultGrund" placeholder="z. B. Demo-Ergebnis eingetragen" maxlength="150">
+ ${resultInputs}<div class="flex space"><button class="btn secondary" onclick="demoErgebnisse()" ${data.settled?'disabled':''}>Alle 12 Ergebnisse simulieren</button></div>
+ <div class="sep"></div><h3>Wochenjackpot abrechnen</h3><p>Ergebnisse: <strong>${entschieden()} / 12</strong> · Jackpot: <strong>${euro(jackpot())}</strong></p>
+ <p class="note">Abrechnung erst nach allen 12 Ergebnissen. Sieger ist der Spieler mit den meisten Punkten; bei Gleichstand wird der Jackpot geteilt. Nach Abrechnung bleiben Ergebnisse gesperrt.</p>
+ <div class="flex"><button class="btn" onclick="abrechnen()" ${data.settled||entschieden()!==spiele.length?'disabled':''}>Woche abrechnen</button><button class="btn secondary" onclick="neueWoche()" ${!data.settled?'disabled':''}>Neue Demo-Woche</button></div>
+ <div class="sep"></div><h3>Virtuelles Gewinnkonto korrigieren</h3>
+ <div class="field3"><div><label for="kontoSpieler">Spieler</label><select id="kontoSpieler">${data.players.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select></div><div><label for="kontoBetrag">Betrag in € (+ / −)</label><input id="kontoBetrag" inputmode="decimal" placeholder="z. B. 2,50"></div></div>
+ <label for="kontoGrund">Begründung (Pflicht)</label><input id="kontoGrund" maxlength="150" placeholder="z. B. Korrektur Testabrechnung"><button class="btn secondary space" onclick="kontokorrektur()">Kontostand korrigieren</button>
+ <div class="sep"></div><h3>Änderungsprotokoll</h3><div class="scroll"><table><thead><tr><th>Wann</th><th>Woche</th><th>Änderung</th><th>Alt</th><th>Neu</th><th>Begründung</th></tr></thead><tbody>${audit||'<tr><td colspan="6">Noch keine Änderungen.</td></tr>'}</tbody></table></div></section>`;
+}
+function render(){
+ renderTop();
+ document.getElementById('inhalt').innerHTML=tab==='tippen'?viewTippen():tab==='rangliste'?viewRangliste():tab==='konten'?viewKonten():viewAdmin();
+}
+render();
 </script>
 </body>
 </html>
