@@ -19,6 +19,8 @@ alter table public.odds_result_changes enable row level security;
 revoke all on public.odds_result_changes from public, anon, authenticated;
 
 -- Gemeinsame Tabelle: nur aktive, angemeldete Wochenteilnehmer und Admins.
+-- Ohne gespeicherten Tipp keine Teilnahme, keinen Einsatz und keinen Ranglistenplatz.
+-- 1 bis 10 gespeicherte Tipps kosten zusammen nur EINMAL 5 EUR pro Spielwoche.
 -- PRIVAT: Tippauswahl und Einzelquoten anderer Spieler werden nicht ausgegeben.
 create or replace function public.odds_week_standings(p_week_id bigint)
 returns table (
@@ -64,6 +66,7 @@ begin
   left join public.tips t on t.game_id = g.id and t.user_id = wp.user_id
   where wp.week_id = p_week_id
   group by p.id, p.display_name
+  having count(t.game_id) >= 1
   order by 5 desc, lower(p.display_name), p.id;
 end;
 $$;
