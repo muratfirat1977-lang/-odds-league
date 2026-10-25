@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -5,62 +6,127 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Odds League</title>
 <style>
+* { box-sizing: border-box; }
 body {
-  font-family: Arial, sans-serif;
+  margin: 0;
   background: #102a22;
   color: white;
-  text-align: center;
-  padding: 25px;
+  font-family: Arial, sans-serif;
 }
-h1 { color: #4ade80; }
+main {
+  max-width: 650px;
+  margin: auto;
+  padding: 24px 16px;
+}
+h1 { color: #4ade80; text-align: center; }
+.subtitle { text-align: center; color: #b8c9c0; }
 .box {
   background: #204638;
-  padding: 25px;
-  border-radius: 15px;
-  margin-top: 25px;
+  padding: 22px;
+  border-radius: 16px;
+  margin-top: 26px;
 }
-input {
-  width: 55px;
-  padding: 10px;
-  font-size: 20px;
-  text-align: center;
+.small { color: #b8c9c0; font-size: 14px; }
+.teams { font-size: 21px; font-weight: bold; }
+.options { display: flex; gap: 8px; margin-top: 20px; }
+.option {
+  flex: 1;
+  background: #315849;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  color: white;
+  padding: 14px 5px;
+  cursor: pointer;
 }
-button {
+.option b { display: block; font-size: 25px; }
+.option span { display: block; font-size: 12px; margin: 8px 0; }
+.option strong { color: #4ade80; font-size: 21px; }
+.option.active { border-color: #4ade80; background: #174b32; }
+.save {
+  width: 100%;
   background: #4ade80;
-  padding: 12px 25px;
   border: none;
-  border-radius: 10px;
-  margin-top: 20px;
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 22px;
   font-size: 17px;
+  font-weight: bold;
+  cursor: pointer;
 }
+#meldung { line-height: 1.6; }
 </style>
 </head>
 <body>
+<main>
 <h1>⚽ ODDS LEAGUE</h1>
-<p>Deine private Fußball-Tippliga</p>
+<p class="subtitle">Deine private Fußball-Tippliga</p>
 
 <div class="box">
-<h2>Testspiel</h2>
-<h3>Bayern München – Dortmund</h3>
-<p>Dein Ergebnistipp:</p>
-<input type="number" id="heim" min="0">
-:
-<input type="number" id="gast" min="0">
-<br>
-<button onclick="speichern()">Tipp speichern</button>
-<p id="meldung"></p>
+  <h2>Spielauswahl</h2>
+  <p class="small">🇩🇪 Bundesliga · Testspiel</p>
+  <p class="teams">Bayern München – Borussia Dortmund</p>
+  <p>Wer gewinnt? Wähle deinen Tipp:</p>
+
+  <div class="options">
+    <button class="option" data-tipp="1" onclick="waehlen('1')">
+      <b>1</b><span>Heimsieg</span><strong>2,10</strong>
+    </button>
+    <button class="option" data-tipp="X" onclick="waehlen('X')">
+      <b>X</b><span>Remis</span><strong>3,40</strong>
+    </button>
+    <button class="option" data-tipp="2" onclick="waehlen('2')">
+      <b>2</b><span>Auswärtssieg</span><strong>3,15</strong>
+    </button>
+  </div>
+
+  <p class="small">Quoten sind nur Testwerte, nicht von Interwetten.</p>
+  <button class="save" onclick="speichern()">Tipp speichern</button>
+  <p id="meldung"></p>
 </div>
 
+<p class="small">Testversion – noch ohne Login, Spielplan und Jackpot.</p>
+</main>
+
 <script>
+const quoten = { "1": 2.10, "X": 3.40, "2": 3.15 };
+let auswahl = null;
+
+function waehlen(tipp) {
+  auswahl = tipp;
+  document.querySelectorAll(".option").forEach(button => {
+    button.classList.toggle("active", button.dataset.tipp === tipp);
+  });
+}
+
 function speichern() {
-  const heim = document.getElementById("heim").value;
-  const gast = document.getElementById("gast").value;
-  if (heim === "" || gast === "" || +heim < 0 || +gast < 0) {
-    document.getElementById("meldung").textContent = "Bitte gültige Tore eingeben.";
+  const meldung = document.getElementById("meldung");
+  if (!auswahl) {
+    meldung.textContent = "Bitte zuerst 1, X oder 2 wählen.";
     return;
   }
-  localStorage.setItem("tipp", heim + ":" + gast);
-  document.getElementById("meldung").textContent = "✅ Tipp gespeichert!";
+  const daten = {
+    spiel: "Bayern München – Borussia Dortmund",
+    tipp: auswahl,
+    quote: quoten[auswahl],
+    zeitpunkt: new Date().toISOString()
+  };
+  localStorage.setItem("odds-league-testtipp", JSON.stringify(daten));
+  meldung.textContent = "✅ Tipp " + auswahl + " gespeichert! Quote: " +
+    quoten[auswahl].toFixed(2).replace(".", ",");
+}
+
+const vorher = localStorage.getItem("odds-league-testtipp");
+if (vorher) {
+  try {
+    const daten = JSON.parse(vorher);
+    if (quoten[daten.tipp]) {
+      waehlen(daten.tipp);
+      document.getElementById("meldung").textContent =
+        "Zuletzt gespeicherter Tipp: " + daten.tipp;
+    }
+  } catch (e) {
+    console.log("Kein gültiger Testtipp vorhanden.");
+  }
 }
 </script>
 </body>
