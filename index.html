@@ -75,6 +75,12 @@ code { color:var(--accent); }
 .auth-card { max-width:460px; margin:22px auto; }
 .form-grid { display:grid; gap:13px; }
 .form-error { min-height:24px; color:#ffdad2; }
+.member-row { padding:14px 0; border-top:1px solid var(--line); display:grid; gap:9px; }
+.member-fields { display:grid; grid-template-columns:minmax(140px,2fr) 1fr 1fr auto; gap:10px; align-items:end; }
+.member-fields .checkline { display:flex; gap:8px; align-items:center; min-height:43px; }
+.member-fields input[type=checkbox] { width:18px; height:18px; min-height:0; accent-color:var(--accent); }
+.member-row .note { margin:0; }
+@media(max-width:650px){.member-fields{grid-template-columns:1fr 1fr}.member-fields > div:first-child{grid-column:span 2}}
 .topbar { display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; }
 .info-box { border:1px solid #628975; background:#13362a; border-radius:12px; padding:12px; margin:12px 0; }
 .live-banner { font-size:14px; color:#c9f4d0; }
@@ -98,7 +104,7 @@ code { color:var(--accent); }
 <header class="brand">
 <img class="brand-logo" src="data:image/webp;base64,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" alt="Original elmurino-Logo">
 <h1>⚽ ODDS LEAGUE</h1>
-<p class="sub">Deine private Fußball-Tippliga · Version 5.1</p>
+<p class="sub">Deine private Fußball-Tippliga · Version 5.2</p>
 <span class="brand-by">POWERED BY ELMURINO</span>
 </header>
 <div id="demoRoot" hidden>
@@ -138,7 +144,7 @@ code { color:var(--accent); }
  </form>
  <form id="passwordRecoveryForm" class="form-grid" hidden>
   <h2>🔐 Neues Passwort festlegen</h2>
-  <p class="note">Du hast den Wiederherstellungslink geöffnet. Wähle jetzt dein neues Passwort.</p>
+  <p class="note">Du hast einen persönlichen Einladungs- oder Wiederherstellungslink geöffnet. Wähle jetzt dein neues Passwort.</p>
   <div><label for="newPassword">Neues Passwort</label><input id="newPassword" type="password" autocomplete="new-password" minlength="8" required></div>
   <div><label for="confirmNewPassword">Passwort wiederholen</label><input id="confirmNewPassword" type="password" autocomplete="new-password" minlength="8" required></div>
   <button id="saveNewPasswordButton" class="btn" type="submit">Neues Passwort speichern</button>
@@ -152,6 +158,17 @@ code { color:var(--accent); }
   <button class="btn secondary" id="demoViewButton" type="button">🧪 Lokale Demo anzeigen</button></div>
   <p class="note">Die Demo-Tipps sind nur auf diesem Gerät gespeichert. Sie werden nicht mit Supabase synchronisiert.</p>
  </div>
+</section>
+<section id="memberAdminSection" class="panel" hidden>
+ <details id="memberAdminDetails">
+  <summary style="cursor:pointer;font-size:20px;font-weight:bold">👥 Spielerverwaltung (nur Administrator)</summary>
+  <p class="note">Freunde werden sicher über Supabase eingeladen. Danach kannst du sie hier aktivieren, ihren Anzeigenamen ändern und für eine Spielwoche anmelden. Es werden keine Passwörter angezeigt oder gespeichert.</p>
+  <p><a href="https://supabase.com/dashboard/project/yklolaydoifjucyzxdss/auth/users" target="_blank" rel="noopener noreferrer" style="color:var(--accent)">Supabase → Authentication → Users → Add user → Send invitation</a></p>
+  <p class="note">Der Einladungslink führt zur Odds League. Neue Spieler setzen ihr Passwort selbst. Neue Konten bleiben zunächst gesperrt, bis du sie hier freischaltest.</p>
+  <div class="flex space"><button class="btn secondary" id="refreshMembersButton" type="button">Mitglieder aktualisieren</button><span id="membersWeekLabel" class="pill">Spielwoche wird gesucht …</span></div>
+  <p id="memberAdminMessage" class="note" role="status"></p>
+  <div id="adminMembersList"></div>
+ </details>
 </section>
 <section id="dbRoot" hidden>
  <div class="panel"><h2>⚽ Echte Anmeldung · Test-Spielplan aus Supabase</h2>
@@ -435,6 +452,7 @@ let dbWeeks = [];
 let dbWeek = null;
 let dbGames = [];
 let dbPicks = [];
+let adminMemberWeek = null;
 const e = id => document.getElementById(id);
 const formatDate = iso => new Date(iso).toLocaleString('de-DE',{dateStyle:'short',timeStyle:'short',timeZone:'Europe/Berlin'});
 const textError = err => err && err.message ? err.message : 'Verbindung fehlgeschlagen.';
@@ -443,6 +461,7 @@ function showAuthForm(message=''){
   display('authChecking',false); display('authForm',true);
   display('requestResetForm',false); display('passwordRecoveryForm',false);
   display('signedIn',false); display('dbRoot',false); display('demoRoot',false);
+  display('memberAdminSection',false);
   e('authError').textContent=message;
 }
 function showResetRequest(){
@@ -450,6 +469,7 @@ function showResetRequest(){
   display('authChecking',false); display('authForm',false);
   display('requestResetForm',true); display('passwordRecoveryForm',false);
   display('signedIn',false); display('dbRoot',false); display('demoRoot',false);
+  display('memberAdminSection',false);
   e('resetEmail').value=e('emailLogin').value.trim();
   e('resetEmailMessage').textContent='';
 }
@@ -458,6 +478,7 @@ function showRecoveryForm(message=''){
   display('authChecking',false); display('authForm',false);
   display('requestResetForm',false); display('passwordRecoveryForm',true);
   display('signedIn',false); display('dbRoot',false); display('demoRoot',false);
+  display('memberAdminSection',false);
   e('recoveryMessage').textContent=message;
 }
 function showChecking(){
@@ -465,6 +486,7 @@ function showChecking(){
   display('authChecking',true);display('authForm',false);
   display('requestResetForm',false);display('passwordRecoveryForm',false);
   display('signedIn',false);display('dbRoot',false);display('demoRoot',false);
+  display('memberAdminSection',false);
 }
 function showMembership(){
   if(recoveryActive)return;
@@ -473,6 +495,7 @@ function showMembership(){
   display('dbRoot',false);display('demoRoot',false);
   const role=currentProfile.role==='admin'?'Administrator':'Mitglied';
   e('memberGreeting').textContent=currentProfile.display_name+' · '+role;
+  display('memberAdminSection',currentProfile.role==='admin');
 }
 async function checkLogin(){
   if(recoveryActive)return;
@@ -647,9 +670,68 @@ async function sendPick(gameId,choice){
     pendingPicks.delete(gameId);
   }
 }
+async function loadAdminMembers(){
+  if(!currentUser || !currentProfile || currentProfile.role!=='admin')return;
+  const info=e('memberAdminMessage');
+  info.textContent='Spieler werden aus Supabase geladen …';
+  e('adminMembersList').innerHTML='';
+  try{
+    const {data:weeks,error:weekError}=await db.from('weeks')
+      .select('id,label,starts_at,ends_at,settled').order('starts_at',{ascending:false});
+    if(weekError)throw weekError;
+    adminMemberWeek=(weeks||[]).find(w=>new Date(w.ends_at)>new Date())||(weeks||[])[0]||null;
+    if(!adminMemberWeek){
+      info.textContent='Bitte zunächst eine Spielwoche anlegen.';
+      e('membersWeekLabel').textContent='Keine Spielwoche';
+      return;
+    }
+    e('membersWeekLabel').textContent=adminMemberWeek.label;
+    const {data:members,error}=await db.rpc('odds_admin_members',{p_week_id:adminMemberWeek.id});
+    if(error)throw error;
+    info.textContent=(members||[]).length+' Benutzerprofile · Aktivierung und Wochenzulassung nur durch Admin.';
+    e('adminMembersList').innerHTML=(members||[]).map(m=>{
+      if(m.member_role==='admin'){
+        return '<div class="member-row"><strong>'+esc(m.member_name)+' · Administrator</strong><p class="note">Administratorprofil – hier nicht veränderbar.</p></div>';
+      }
+      const memberId=esc(m.member_id);
+      return '<div class="member-row" data-member-id="'+memberId+'">'
+        +'<div class="member-fields">'
+        +'<div><label>Spielername</label><input type="text" data-field="name" maxlength="40" value="'+esc(m.member_name)+'"></div>'
+        +'<div><label class="checkline"><input type="checkbox" data-field="active" '+(m.member_active?'checked':'')+'> Freigeschaltet</label></div>'
+        +'<div><label class="checkline"><input type="checkbox" data-field="enrolled" '+(m.in_week?'checked':'')+'> In Spielwoche</label></div>'
+        +'<button class="btn" data-member-save type="button">Speichern</button>'
+        +'</div><p class="note">Zugang '+(m.member_active?'aktiv':'wartet auf Freigabe')
+        +' · Teilnahme '+(m.in_week?'eingetragen':'noch nicht eingetragen')+'</p></div>';
+    }).join('')||'<p class="note">Noch keine Mitglieder gefunden.</p>';
+  }catch(err){
+    info.textContent='Spielerverwaltung ist noch nicht eingerichtet oder erreichbar. Bitte zuerst die SQL-Datei sql/spieler_verwaltung_v1.sql in Supabase ausführen. Details: '+textError(err);
+  }
+}
+async function saveAdminMember(button){
+  if(!adminMemberWeek || !currentProfile || currentProfile.role!=='admin')return;
+  const row=button.closest('[data-member-id]');
+  if(!row)return;
+  button.disabled=true;
+  e('memberAdminMessage').textContent='Änderungen werden gespeichert …';
+  try{
+    const {error}=await db.rpc('odds_admin_update_member',{
+      p_member_id:row.dataset.memberId,
+      p_display_name:row.querySelector('[data-field="name"]').value.trim(),
+      p_active:row.querySelector('[data-field="active"]').checked,
+      p_week_id:adminMemberWeek.id,
+      p_enrolled:row.querySelector('[data-field="enrolled"]').checked
+    });
+    if(error)throw error;
+    await loadAdminMembers();
+    e('memberAdminMessage').textContent='✅ Spieler aktualisiert.';
+  }catch(err){
+    e('memberAdminMessage').textContent='Speichern fehlgeschlagen: '+textError(err);
+  }finally{button.disabled=false;}
+}
 async function startAuth(){
   if(!window.supabase || !window.supabase.createClient){showAuthForm('Die Supabase-Bibliothek konnte nicht geladen werden. Prüfe deine Verbindung.');return;}
   try{
+    const inviteLink=new URLSearchParams(window.location.hash.replace(/^#/,'')).get('type')==='invite';
     db=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
     e('authForm').addEventListener('submit',submitLogin);
     e('forgotPasswordButton').addEventListener('click',showResetRequest);
@@ -659,10 +741,27 @@ async function startAuth(){
     e('logoutButton').addEventListener('click',logout);
     e('liveViewButton').addEventListener('click',showDb);
     e('demoViewButton').addEventListener('click',showDemo);
+    e('refreshMembersButton').addEventListener('click',loadAdminMembers);
+    e('memberAdminDetails').addEventListener('toggle',()=>{
+      if(e('memberAdminDetails').open)loadAdminMembers();
+    });
+    e('adminMembersList').addEventListener('click',event=>{
+      const button=event.target.closest('button[data-member-save]');
+      if(button)saveAdminMember(button);
+    });
     db.auth.onAuthStateChange((event)=>{
       if(event==='PASSWORD_RECOVERY'){showRecoveryForm();return;}
       if(event==='SIGNED_OUT' && !recoveryActive){currentUser=null;currentProfile=null;showAuthForm();}
     });
+    if(inviteLink){
+      // Einladung: erster Login kommt per E-Mail-Link, danach selbst ein Passwort setzen.
+      const {data,error}=await db.auth.getSession();
+      if(error)throw error;
+      if(data.session){
+        showRecoveryForm('Bitte wähle ein Passwort für deinen neuen Zugang.');
+        return;
+      }
+    }
     await checkLogin();
   }catch(err){showAuthForm('Supabase konnte nicht gestartet werden: '+textError(err));}
 }
