@@ -125,7 +125,7 @@ code { color:var(--accent); }
 </nav>
 <div class="stats" id="stats"></div>
 <section id="inhalt"></section>
-<p class="note">V5 mit deinem elmurino-Logo · Testdaten: 12 erfundene Begegnungen und Beispielquoten, keine echten Interwetten-Quoten oder Ergebnisse. Die 5 € pro Spieler sind rein virtuell. Echte Benutzeranmeldung ist eingebaut; Live-Spielplan, gemeinsame Rangliste und Jackpot-Abrechnung werden schrittweise angebunden.</p>
+<p class="note">V5 mit deinem elmurino-Logo · Testdaten: 12 erfundene Begegnungen und Beispielquoten, keine echten Interwetten-Quoten oder Ergebnisse. Nur Spieler mit mindestens einem gespeicherten Tipp zählen mit virtuellen 5 € Einsatz. Echte Benutzeranmeldung ist eingebaut; Live-Spielplan, gemeinsame Rangliste und Jackpot-Abrechnung werden schrittweise angebunden.</p>
 </div>
 <section id="authPanel" class="panel auth-card" aria-label="Anmeldung">
  <div id="authChecking" role="status"><h2>🔐 Anmeldung wird vorbereitet</h2><p class="note">Verbindung mit Supabase wird geprüft …</p></div>
@@ -180,7 +180,7 @@ code { color:var(--accent); }
   <div id="dbStats" class="stats"></div></div>
  <section class="panel" id="liveStandingSection" aria-label="Rangliste">
   <h2>🏆 Rangliste &amp; Spieler</h2>
-  <p class="note">Die Spielernamen stammen aus Supabase. Richtige Tipps zählen mit der gespeicherten Quote × 10. Tippauswahlen anderer Spieler bleiben privat.</p>
+  <p class="note">Die Spielernamen stammen aus Supabase. Nur Spieler mit mindestens einem gespeicherten Tipp stehen in der Wochenrangliste und zählen mit einmalig 5 € Einsatz. Richtige Tipps: gespeicherte Quote × 10 Punkte. Tippauswahlen anderer Spieler bleiben privat.</p>
   <div class="standing-tools">
    <div><label for="liveStandingSelect">Spieler ansehen</label><select id="liveStandingSelect"><option value="">Wird geladen …</option></select></div>
    <p id="liveStandingPlayer" class="note" role="status"></p>
@@ -289,10 +289,11 @@ function logAudit(art,alt,neu,grund){
 function logKonto(playerId,cents,typ,grund){
  data.ledger.unshift({time:new Date().toISOString(),week:data.week,playerId,cents,typ,grund});
 }
+function aktiveDemoSpieler(){return data.players.filter(p=>tippzahl(p.id)>0);}
 function topSpieler(){
- return [...data.players].sort((a,b)=>punkte(b.id)-punkte(a.id) || a.name.localeCompare(b.name,'de'));
+ return aktiveDemoSpieler().sort((a,b)=>punkte(b.id)-punkte(a.id) || a.name.localeCompare(b.name,'de'));
 }
-function jackpot(){return data.players.length*500;}
+function jackpot(){return aktiveDemoSpieler().length*500;}
 function entschieden(){return spiele.filter(s=>ausgaenge.includes(data.results[s.id])).length;}
 function wechselSicht(welche){tab=welche; status=''; render(); window.scrollTo({top:0,behavior:'auto'});}
 function tabWechseln(welche){wechselSicht(welche);}
@@ -370,6 +371,7 @@ function demoErgebnisse(){
 }
 function abrechnen(){
  if(data.settled || entschieden()!==spiele.length){status='Die Abrechnung ist erst mit 12 von 12 Ergebnissen möglich.';render();return;}
+ if(!aktiveDemoSpieler().length){status='Ohne mindestens einen Tipp gibt es keinen Einsatz und keine Wochenabrechnung.';render();return;}
  if(!confirm(`Demo-Woche ${data.week} abrechnen und ${euro(jackpot())} virtuell gutschreiben?`))return;
  const sorted=topSpieler(), max=punkte(sorted[0].id);
  // Feste Cent-Regel: Restcent gehen alphabetisch nach Spielernamen an punktgleiche Sieger.
@@ -398,7 +400,7 @@ function renderTop(){
  document.getElementById('wocheLabel').textContent='Demo-Woche '+data.week + (data.settled?' · abgerechnet':'');
  document.querySelectorAll('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
  document.getElementById('stats').innerHTML=`
- <div class="stat"><small>Virtueller Jackpot</small><div class="number">${euro(jackpot())}</div><small>${data.players.length} Spieler × 5 €</small></div>
+ <div class="stat"><small>Virtueller Jackpot</small><div class="number">${euro(jackpot())}</div><small>${aktiveDemoSpieler().length} tippende Spieler × 5 €</small></div>
  <div class="stat"><small>Meine Tipps</small><div class="number">${tippzahl(data.selected)} / 10</div><small>Demo-Woche ${data.week}</small></div>
  <div class="stat"><small>Ergebnisse</small><div class="number">${entschieden()} / 12</div><small>${data.settled?'Abgerechnet':'Noch offen'}</small></div>`;
 }
@@ -444,7 +446,7 @@ function viewKonten(){
   const p=data.players.find(p=>p.id===l.playerId);
   return `<tr><td>${new Date(l.time).toLocaleDateString('de-DE')}</td><td>${esc(p?p.name:'Unbekannt')}</td><td>${esc(l.typ)}</td><td>${l.cents>=0?'+':''}${euro(l.cents)}</td><td>${esc(l.grund)}</td></tr>`;
  }).join('');
- return `<section class="panel"><h2>💶 Virtuelle Gewinnkonten</h2><p class="note">Jeder registrierte Spieler zählt pro Woche mit einem virtuellen Beitrag von 5 €, auch ohne Tipp. Beiträge werden nicht als echte Zahlungen erfasst und nicht von den Gewinnkonten abgezogen.</p>
+ return `<section class="panel"><h2>💶 Virtuelle Gewinnkonten</h2><p class="note">Nur Spieler mit mindestens einem gespeicherten Tipp zählen für diese Woche mit 5 € Einsatz. Ohne Tipp: keine Teilnahme, kein Abzug. Beiträge sind hier bisher rein virtuell; eine Kontobelastung ist noch nicht eingebaut.</p>
  <p class="status">${esc(status)}</p><div class="scroll"><table><thead><tr><th>Spieler</th><th>Gewinnkonto</th></tr></thead><tbody>${rows}</tbody></table></div>
  <h3 class="space">Geldbewegungen (virtuell)</h3><div class="scroll"><table><thead><tr><th>Datum</th><th>Spieler</th><th>Vorgang</th><th>Betrag</th><th>Grund</th></tr></thead><tbody>${movements||'<tr><td colspan="5">Noch keine virtuellen Gewinne oder Korrekturen.</td></tr>'}</tbody></table></div></section>`;
 }
@@ -453,12 +455,12 @@ function viewAdmin(){
  const audit=data.audit.slice(0,100).map(a=>`<tr><td>${new Date(a.time).toLocaleString('de-DE')}</td><td>${a.week}</td><td>${esc(a.art)}</td><td>${esc(a.alt)}</td><td>${esc(a.neu)}</td><td>${esc(a.grund)}</td></tr>`).join('');
  return `<section class="panel"><h2>⚙️ Admin-Demobereich</h2><p class="note">Dieser Bereich ist <strong>nicht geschützt</strong>. Jeder mit dem Seitenlink kann ihn auf dem eigenen Gerät bedienen; Änderungen sind nur dort sichtbar.</p><p class="status">${esc(status)}</p>
  <h3>Spieler anlegen</h3><div class="fields"><div><label for="neuerName">Spielername (keine Passwörter eingeben)</label><input id="neuerName" maxlength="40" placeholder="z. B. Spieler 4" autocomplete="off"></div><button class="btn" onclick="spielerHinzufuegen()" ${data.settled?'disabled':''}>Hinzufügen</button></div>
- <p class="note">Zurzeit ${data.players.length} Teilnehmer = ${euro(jackpot())} virtueller Wochenjackpot. Jeder angelegte Spieler zählt mit, unabhängig von Tipps.</p>
+ <p class="note">Zurzeit ${aktiveDemoSpieler().length} aktive Teilnehmer = ${euro(jackpot())} virtueller Wochenjackpot. Nur Spieler mit mindestens einem gespeicherten Tipp zahlen einmalig 5 €.</p>
  <div class="sep"></div><h3>Test-Ergebnisse eintragen</h3><p class="note">Für jede Korrektur wird der alte und neue Wert samt Begründung protokolliert. Ergebnis-Erfassung sperrt die Tipps zum betreffenden Spiel.</p>
  <label for="resultGrund">Begründung für einzelne Ergebnisänderung</label><input id="resultGrund" placeholder="z. B. Demo-Ergebnis eingetragen" maxlength="150">
  ${resultInputs}<div class="flex space"><button class="btn secondary" onclick="demoErgebnisse()" ${data.settled?'disabled':''}>Alle 12 Ergebnisse simulieren</button></div>
  <div class="sep"></div><h3>Wochenjackpot abrechnen</h3><p>Ergebnisse: <strong>${entschieden()} / 12</strong> · Jackpot: <strong>${euro(jackpot())}</strong></p>
- <p class="note">Abrechnung erst nach allen 12 Ergebnissen. Sieger ist der Spieler mit den meisten Punkten; bei Gleichstand wird der Jackpot geteilt. Nach Abrechnung bleiben Ergebnisse gesperrt.</p>
+ <p class="note">Abrechnung erst nach allen 12 Ergebnissen und mit mindestens einem tippenden Spieler. Nur Spieler mit wenigstens einem gespeicherten Tipp sind gewinnberechtigt; bei Gleichstand wird der Jackpot geteilt.</p>
  <div class="flex"><button class="btn" onclick="abrechnen()" ${data.settled||entschieden()!==spiele.length?'disabled':''}>Woche abrechnen</button><button class="btn secondary" onclick="neueWoche()" ${!data.settled?'disabled':''}>Neue Demo-Woche</button></div>
  <div class="sep"></div><h3>Virtuelles Gewinnkonto korrigieren</h3>
  <div class="field3"><div><label for="kontoSpieler">Spieler</label><select id="kontoSpieler">${data.players.map(p=>`<option value="${p.id}">${esc(p.name)}</option>`).join('')}</select></div><div><label for="kontoBetrag">Betrag in € (+ / −)</label><input id="kontoBetrag" inputmode="decimal" placeholder="z. B. 2,50"></div></div>
@@ -652,7 +654,7 @@ async function loadDb({preserveScroll=false}={}){
 }
 function renderDb(){
   e('dbMessage').textContent=dbWeek.label+' · '+formatDate(dbWeek.starts_at)+' bis '+formatDate(dbWeek.ends_at)+' · TESTDATEN, falls von uns manuell angelegt. Keine Interwetten-Livequoten.';
-  e('dbStats').innerHTML=`<div class="stat"><small>Meine gespeicherten Tipps</small><div class="number">${dbPicks.length} / 10</div><small>Auf dem Server gespeichert</small></div><div class="stat"><small>Begegnungen</small><div class="number">${dbGames.length}</div><small>Aus der Datenbank</small></div><div class="stat"><small>Spielwoche</small><div class="number">${dbWeek.settled?'Abgerechnet':'Offen'}</div><small>5 € je Teilnehmer · virtuell</small></div>`;
+  e('dbStats').innerHTML=`<div class="stat"><small>Meine gespeicherten Tipps</small><div class="number">${dbPicks.length} / 10</div><small>Auf dem Server gespeichert</small></div><div class="stat"><small>Begegnungen</small><div class="number">${dbGames.length}</div><small>Aus der Datenbank</small></div><div class="stat"><small>Spielwoche</small><div class="number">${dbWeek.settled?'Abgerechnet':'Offen'}</div><small>5 € ab dem ersten gespeicherten Tipp · virtuell</small></div>`;
   fillResultGames();
   if(!dbGames.length){e('dbMatches').innerHTML='<div class="panel">Noch keine Partien für diese Spielwoche vorhanden.</div>';return;}
   e('dbMatches').innerHTML=dbGames.map(g=>{
@@ -720,15 +722,15 @@ async function loadLiveStandings(){
     const drop=e('liveStandingSelect');
     drop.innerHTML=liveStandings.map(p=>'<option value="'+esc(p.member_id)+'">'+esc(p.member_name)+'</option>').join('')||'<option value="">Keine Spieler</option>';
     drop.value=selectedStandingId||'';
-    e('liveStandingJackpot').textContent='Virtueller Jackpot: '+(liveStandings.length*5).toLocaleString('de-DE',{style:'currency',currency:'EUR'})+' · '+liveStandings.length+' Wochen-Teilnehmer × 5 €.';
+    e('liveStandingJackpot').textContent='Virtueller Jackpot: '+(liveStandings.length*5).toLocaleString('de-DE',{style:'currency',currency:'EUR'})+' · '+liveStandings.length+' tippende Spieler × 5 € (0 Tipps = 0 €).';
     let previous=null,rank=0;
     e('liveStandingRows').innerHTML=liveStandings.map((p,i)=>{
       const points=Number(p.total_points||0);
       if(previous===null||previous!==points)rank=i+1;
       previous=points;
       return '<tr class="'+(p.member_id===currentUser.id?'self':'')+'"><td>'+rank+'.</td><td><strong>'+esc(p.member_name)+'</strong>'+(p.member_id===currentUser.id?' (du)':'')+'</td><td>'+Number(p.tip_count||0)+'</td><td>'+Number(p.correct_count||0)+'</td><td>'+standingPoints(points)+'</td></tr>';
-    }).join('')||'<tr><td colspan="5">Noch keine Teilnehmer.</td></tr>';
-    e('liveStandingMessage').textContent='Wertung aus Supabase geladen.';
+    }).join('')||'<tr><td colspan="5">Noch keine Spieler mit Tipps.</td></tr>';
+    e('liveStandingMessage').textContent='Wertung aus Supabase geladen · nur Spieler mit mindestens 1 Tipp zählen als Teilnehmer.';
     selectStandingPlayer();
   }catch(err){
     e('liveStandingMessage').textContent='Neue Rangliste noch nicht freigeschaltet: Bitte zuerst sql/rangliste_ergebnisse_v5_3.sql im Supabase SQL Editor ausführen. '+textError(err);
