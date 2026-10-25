@@ -125,7 +125,24 @@ code { color:var(--accent); }
   <div><label for="emailLogin">E-Mail-Adresse</label><input id="emailLogin" type="email" autocomplete="username" required></div>
   <div><label for="passwordLogin">Passwort</label><input id="passwordLogin" type="password" autocomplete="current-password" required></div>
   <button id="loginButton" class="btn" type="submit">Anmelden</button>
+  <button id="forgotPasswordButton" class="btn secondary" type="button">Passwort vergessen?</button>
   <p class="form-error" id="authError" role="alert"></p>
+ </form>
+ <form id="requestResetForm" class="form-grid" hidden>
+  <h2>🔑 Passwort zurücksetzen</h2>
+  <p class="note">Wir schicken dir einen Link, mit dem du ein neues Passwort festlegen kannst.</p>
+  <div><label for="resetEmail">E-Mail-Adresse</label><input id="resetEmail" type="email" autocomplete="email" required></div>
+  <button id="sendResetButton" class="btn" type="submit">Link per E-Mail senden</button>
+  <button id="backToLoginButton" class="btn secondary" type="button">Zurück zur Anmeldung</button>
+  <p id="resetEmailMessage" class="note" role="status"></p>
+ </form>
+ <form id="passwordRecoveryForm" class="form-grid" hidden>
+  <h2>🔐 Neues Passwort festlegen</h2>
+  <p class="note">Du hast den Wiederherstellungslink geöffnet. Wähle jetzt dein neues Passwort.</p>
+  <div><label for="newPassword">Neues Passwort</label><input id="newPassword" type="password" autocomplete="new-password" minlength="8" required></div>
+  <div><label for="confirmNewPassword">Passwort wiederholen</label><input id="confirmNewPassword" type="password" autocomplete="new-password" minlength="8" required></div>
+  <button id="saveNewPasswordButton" class="btn" type="submit">Neues Passwort speichern</button>
+  <p id="recoveryMessage" class="form-error" role="alert"></p>
  </form>
  <div id="signedIn" hidden>
   <div class="topbar"><div><h2>Willkommen bei Odds League</h2><p id="memberGreeting"></p></div>
@@ -413,6 +430,7 @@ render();
 let db = null;
 let currentUser = null;
 let currentProfile = null;
+let recoveryActive = false;
 let dbWeeks = [];
 let dbWeek = null;
 let dbGames = [];
@@ -423,23 +441,45 @@ const textError = err => err && err.message ? err.message : 'Verbindung fehlgesc
 function display(id, yes){e(id).hidden=!yes;}
 function showAuthForm(message=''){
   display('authChecking',false); display('authForm',true);
+  display('requestResetForm',false); display('passwordRecoveryForm',false);
   display('signedIn',false); display('dbRoot',false); display('demoRoot',false);
   e('authError').textContent=message;
 }
+function showResetRequest(){
+  recoveryActive=false;
+  display('authChecking',false); display('authForm',false);
+  display('requestResetForm',true); display('passwordRecoveryForm',false);
+  display('signedIn',false); display('dbRoot',false); display('demoRoot',false);
+  e('resetEmail').value=e('emailLogin').value.trim();
+  e('resetEmailMessage').textContent='';
+}
+function showRecoveryForm(message=''){
+  recoveryActive=true;
+  display('authChecking',false); display('authForm',false);
+  display('requestResetForm',false); display('passwordRecoveryForm',true);
+  display('signedIn',false); display('dbRoot',false); display('demoRoot',false);
+  e('recoveryMessage').textContent=message;
+}
 function showChecking(){
+  if(recoveryActive)return;
   display('authChecking',true);display('authForm',false);
+  display('requestResetForm',false);display('passwordRecoveryForm',false);
   display('signedIn',false);display('dbRoot',false);display('demoRoot',false);
 }
 function showMembership(){
+  if(recoveryActive)return;
   display('authChecking',false);display('authForm',false);display('signedIn',true);
+  display('requestResetForm',false);display('passwordRecoveryForm',false);
   display('dbRoot',false);display('demoRoot',false);
   const role=currentProfile.role==='admin'?'Administrator':'Mitglied';
   e('memberGreeting').textContent=currentProfile.display_name+' · '+role;
 }
 async function checkLogin(){
+  if(recoveryActive)return;
   showChecking();
   try {
     const {data, error}=await db.auth.getUser();
+    if(recoveryActive)return;
     if(error) throw error;
     if(!data.user){currentUser=null;currentProfile=null;showAuthForm();return;}
     currentUser=data.user;
@@ -450,9 +490,40 @@ async function checkLogin(){
       showAuthForm('Dein Benutzerkonto ist vorhanden, aber noch nicht als Mitglied freigeschaltet.');
       return;
     }
+    if(recoveryActive)return;
     currentProfile=p.data;
     showMembership();
-  } catch(err){showAuthForm('Die Anmeldung konnte nicht geprüft werden: '+textError(err));}
+  } catch(err){if(!recoveryActive)showAuthForm('Die Anmeldung konnte nicht geprüft werden: '+textError(err));}
+}
+async function sendPasswordReset(ev){
+  ev.preventDefault();
+  const button=e('sendResetButton');button.disabled=true;
+  e('resetEmailMessage').textContent='E-Mail wird angefordert …';
+  try{
+    const redirectTo=window.location.origin+window.location.pathname;
+    const {error}=await db.auth.resetPasswordForEmail(e('resetEmail').value.trim(),{redirectTo});
+    if(error)throw error;
+    e('resetEmailMessage').textContent='Falls die E-Mail-Adresse registriert ist, bekommst du einen Link. Prüfe bitte auch deinen Spam-Ordner.';
+  }catch(err){e('resetEmailMessage').textContent='Fehler beim Senden: '+textError(err);}
+  finally{button.disabled=false;}
+}
+async function saveNewPassword(ev){
+  ev.preventDefault();
+  const pw=e('newPassword').value;
+  if(pw!==e('confirmNewPassword').value){e('recoveryMessage').textContent='Die Passwörter stimmen nicht überein.';return;}
+  if(pw.length<8){e('recoveryMessage').textContent='Bitte mindestens acht Zeichen verwenden.';return;}
+  const button=e('saveNewPasswordButton');button.disabled=true;
+  e('recoveryMessage').textContent='Passwort wird gespeichert …';
+  try{
+    const {error}=await db.auth.updateUser({password:pw});
+    if(error)throw error;
+    e('newPassword').value='';e('confirmNewPassword').value='';
+    await db.auth.signOut();
+    recoveryActive=false;
+    history.replaceState(null,'',window.location.pathname);
+    showAuthForm('Dein Passwort wurde geändert. Melde dich jetzt mit dem neuen Passwort an.');
+  }catch(err){e('recoveryMessage').textContent='Passwortänderung fehlgeschlagen: '+textError(err);}
+  finally{button.disabled=false;}
 }
 async function submitLogin(ev){
   ev.preventDefault();
@@ -542,11 +613,16 @@ async function startAuth(){
   try{
     db=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
     e('authForm').addEventListener('submit',submitLogin);
+    e('forgotPasswordButton').addEventListener('click',showResetRequest);
+    e('backToLoginButton').addEventListener('click',()=>showAuthForm());
+    e('requestResetForm').addEventListener('submit',sendPasswordReset);
+    e('passwordRecoveryForm').addEventListener('submit',saveNewPassword);
     e('logoutButton').addEventListener('click',logout);
     e('liveViewButton').addEventListener('click',showDb);
     e('demoViewButton').addEventListener('click',showDemo);
     db.auth.onAuthStateChange((event)=>{
-      if(event==='SIGNED_OUT') {currentUser=null;currentProfile=null;showAuthForm();}
+      if(event==='PASSWORD_RECOVERY'){showRecoveryForm();return;}
+      if(event==='SIGNED_OUT' && !recoveryActive){currentUser=null;currentProfile=null;showAuthForm();}
     });
     await checkLogin();
   }catch(err){showAuthForm('Supabase konnte nicht gestartet werden: '+textError(err));}
