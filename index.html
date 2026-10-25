@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Odds League</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #102a22;
+  color: white;
+  text-align: center;
+  padding: 25px;
+}
+h1 { color: #4ade80; }
+.box {
+  background: #204638;
+  padding: 25px;
+  border-radius: 15px;
+  margin-top: 25px;
+}
+input {
+  width: 55px;
+  padding: 10px;
+  font-size: 20px;
+  text-align: center;
+}
+button {
+  background: #4ade80;
+  padding: 12px 25px;
+  border: none;
+  border-radius: 10px;
+  margin-top: 20px;
+  font-size: 17px;
+}
+</style>
+</head>
+<body>
+<h1>⚽ ODDS LEAGUE</h1>
+<p>Deine private Fußball-Tippliga</p>
+
+<div class="box">
+<h2>Testspiel</h2>
+<h3>Bayern München – Dortmund</h3>
+<p>Dein Ergebnistipp:</p>
+<input type="number" id="heim" min="0">
+:
+<input type="number" id="gast" min="0">
+<br>
+<button onclick="speichern()">Tipp speichern</button>
+<p id="meldung"></p>
+</div>
+
+<script>
+function speichern() {
+  const heim = document.getElementById("heim").value;
+  const gast = document.getElementById("gast").value;
+  if (heim === "" || gast === "" || +heim < 0 || +gast < 0) {
+    document.getElementById("meldung").textContent = "Bitte gültige Tore eingeben.";
+    return;
+  }
+  localStorage.setItem("tipp", heim + ":" + gast);
+  document.getElementById("meldung").textContent = "✅ Tipp gespeichert!";
+}
+</script>
+</body>
+</html>
