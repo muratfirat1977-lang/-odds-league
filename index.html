@@ -877,7 +877,7 @@ async function settleLiveWeek(){
   if(e('liveSettleButton').disabled)return;
   const participants=liveStandings.filter(p=>Number(p.tip_count)>0).length;
   const amount=euroCents(participants*500);
-  const question='TEST-WOCHENABRECHNUNG ENDGÜLTIG AUSFÜHREN?\n\n'
+  const question='WOCHENABRECHNUNG ENDGÜLTIG AUSFÜHREN?\n\n'
     +dbWeek.label+'\n'+participants+' Spieler × 5 € = '+amount+' virtueller Jackpot.\n\n'
     +'Alle Tipps und Ergebnisse dieser Woche werden danach gesperrt. Es gibt keine zweite Abrechnung. Fortfahren?';
   if(!confirm(question))return;
