@@ -181,6 +181,8 @@ code { color:var(--accent); }
   <div class="flex space"><button class="btn secondary" id="refreshMembersButton" type="button">Mitglieder aktualisieren</button><span id="membersWeekLabel" class="pill">Spielwoche wird gesucht …</span></div>
   <label for="adminWeekSelect">Mitglieder für Spielwoche freischalten</label>
   <select id="adminWeekSelect" style="width:100%"><option value="">Spielwoche wird geladen …</option></select>
+  <button class="btn space" id="adminOpenWeekButton" type="button">⚽ Ausgewählte Woche zum Tippen öffnen</button>
+  <p class="note">Die Auswahl oben verwaltet die Zulassung. Der Button öffnet den Spielplan für dein aktuell angemeldetes Konto.</p>
   <p id="memberAdminMessage" class="note" role="status"></p>
   <div id="adminMembersList"></div>
  </details>
@@ -223,11 +225,12 @@ code { color:var(--accent); }
   <p class="note" id="adminCreateWeekMessage" role="status"></p>
  </details>
 </section>
-<section id="dbRoot" hidden>
+<section id="dbRoot" tabindex="-1" hidden>
  <div class="panel"><h2>⚽ Echte Anmeldung · Spielplan aus Supabase</h2>
   <label for="liveWeekSelect">Spielwoche auswählen</label><select id="liveWeekSelect" style="width:100%"></select>
   <p id="dbMessage" class="note" role="status">Spielwochen werden geladen …</p>
   <div id="dbStats" class="stats"></div></div>
+ <div id="dbMatches"></div>
  <section class="panel" id="liveStandingSection" aria-label="Rangliste">
   <h2>🏆 Rangliste &amp; Spieler</h2>
   <p class="note">Die Spielernamen stammen aus Supabase. Nur Spieler mit mindestens einem gespeicherten Tipp stehen in der Wochenrangliste und zählen mit einmalig 5 € Einsatz. Richtige Tipps: gespeicherte Quote × 10 Punkte. Tippauswahlen anderer Spieler bleiben privat.</p>
@@ -279,7 +282,6 @@ code { color:var(--accent); }
    <div class="scroll"><table><thead><tr><th>Wann</th><th>Spiel</th><th>Alt → Neu</th><th>Grund</th></tr></thead><tbody id="liveResultHistory"></tbody></table></div>
   </details>
  </section>
- <div id="dbMatches"></div>
 </section>
 </main>
 <script>
@@ -699,7 +701,17 @@ async function showDb(){
   if(!currentProfile)return;
   display('demoRoot',false);display('dbRoot',true);
   e('demoViewButton').textContent='🧪 Lokale Demo anzeigen';
+  e('dbRoot').focus({preventScroll:true});
+  e('dbRoot').scrollIntoView({behavior:'instant',block:'start'});
   await loadDb();
+}
+async function openAdminWeek(){
+  if(!currentProfile || currentProfile.role!=='admin')return;
+  const weekId=e('adminWeekSelect').value;
+  if(!weekId)return;
+  dbWeekOverrideId=weekId;
+  walletBalanceCents=null;
+  await showDb();
 }
 function localLock(g){
   return !!g.result || !!(dbWeek && dbWeek.settled) || Date.now()>=new Date(g.kickoff).getTime()-300000;
@@ -714,7 +726,7 @@ async function loadDb({preserveScroll=false}={}){
   }
   try {
     const {data:weeks,error:we}=await db.from('weeks').select('id,label,starts_at,ends_at,settled').order('starts_at',{ascending:false});
-    if(we)throw we;
+    if(we)throw Error('Spielwochen: '+textError(we));
     dbWeeks=weeks||[];
     if(!dbWeeks.length){
       e('dbMessage').textContent='Die Anmeldung funktioniert. In Supabase ist aber noch keine Spielwoche angelegt. Als Nächstes erstellen wir eine Testwoche mit Partien.';
@@ -731,8 +743,8 @@ async function loadDb({preserveScroll=false}={}){
       db.from('games').select('id,league,home_team,away_team,kickoff,quote_1,quote_x,quote_2,result').eq('week_id',dbWeek.id).order('kickoff'),
       db.from('tips').select('game_id,choice,locked_quote').eq('user_id',currentUser.id)
     ]);
-    if(gameResult.error)throw gameResult.error;
-    if(pickResult.error)throw pickResult.error;
+    if(gameResult.error)throw Error('Begegnungen: '+textError(gameResult.error));
+    if(pickResult.error)throw Error('Eigene Tipps: '+textError(pickResult.error));
     dbGames=gameResult.data||[];
     dbPicks=(pickResult.data||[]).filter(t=>dbGames.some(g=>g.id===t.game_id));
     const previousY=preserveScroll ? window.scrollY : null;
@@ -741,7 +753,12 @@ async function loadDb({preserveScroll=false}={}){
     await loadWalletAndSettlement();
     if(currentProfile.role==='admin')await loadResultHistory();
     if(preserveScroll) window.scrollTo({top:previousY,behavior:'instant'});
-  }catch(err){e('dbMessage').textContent='Datenbank konnte nicht gelesen werden: '+textError(err);}
+  }catch(err){
+    const detail=textError(err);
+    e('dbMessage').textContent='Datenbank konnte nicht gelesen werden: '+detail
+      +(/permission denied for table week_participants/i.test(detail)
+        ? ' · Administrator: sql/leserechte_week_participants_v5_6_fix.sql im Supabase SQL Editor ausführen, danach diese Ansicht erneut öffnen.' : '');
+  }
 }
 function renderDb(){
   e('dbMessage').textContent=dbWeek.label+' · '+formatDate(dbWeek.starts_at)+' bis '+formatDate(dbWeek.ends_at)+' · TESTDATEN, falls von uns manuell angelegt. Keine Interwetten-Livequoten.';
@@ -1196,6 +1213,7 @@ async function startAuth(){
     e('passwordRecoveryForm').addEventListener('submit',saveNewPassword);
     e('logoutButton').addEventListener('click',logout);
     e('liveViewButton').addEventListener('click',showDb);
+    e('adminOpenWeekButton').addEventListener('click',openAdminWeek);
     e('demoViewButton').addEventListener('click',showDemo);
     e('refreshMembersButton').addEventListener('click',loadAdminMembers);
     e('liveStandingSelect').addEventListener('change',selectStandingPlayer);
